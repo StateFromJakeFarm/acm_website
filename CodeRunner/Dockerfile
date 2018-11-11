@@ -1,7 +1,8 @@
 FROM ubuntu
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install build-essential -y
 RUN mkdir /code
 WORKDIR /code
 ADD . /code/
-RUN sudo apt update
-RUN sudo apt upgrade
-RUN sudo apt install build-essential -y
+CMD cat test.cpp

@@ -15,6 +15,10 @@ services:
     build: ./Grader
     volumes:
       - ./Grader:/code
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
-     - "80:8000"
-     #command: python3 // Run a webserver to handle grade me requests
+     - "5000:5000"
+    command: python3 grader.py
+  runner:
+    build: ./CodeRunner
+
