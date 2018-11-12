@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -10,6 +10,11 @@ def login(request):
 def register(request):
     return render(request, "register.html")
 
-@login_required
 def home(request):
+    return render(request, "home.html")
+
+def problems(request):
+    return render(request, "home.html")
+
+def leaderboard(request):
     return render(request, "home.html")
