@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-  #The website container
-  web:
+  # The website container
+  website:
     build: ./Website
     volumes:
       - ./Website:/code
@@ -10,7 +10,7 @@ services:
       - "8000:8000"
     command: python3 manage.py runserver 0.0.0.0:8000
 
-  #The backend container
+  # The backend container
   backend:
     build: ./Grader
     volumes:
@@ -19,6 +19,8 @@ services:
     ports:
      - "5000:5000"
     command: python3 grader.py
+  
+  # Runner container, will immediatley exit
   runner:
     build: ./CodeRunner
 
