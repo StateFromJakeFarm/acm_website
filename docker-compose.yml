@@ -6,8 +6,10 @@ services:
     build: ./Website
     volumes:
       - ./Website:/code
+      - /tmp:/tmp
     ports:
       - "8000:8000"
+    network_mode: host
     command: python3 manage.py runserver 0.0.0.0:8000
 
   # The backend container
@@ -16,11 +18,14 @@ services:
     volumes:
       - ./Grader:/code
       - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp:ro
     ports:
-     - "5000:5000"
+      - "5000:5000"
+    network_mode: host
     command: python3 grader.py
   
   # Runner container, will immediatley exit
   runner:
     build: ./CodeRunner
-
+    volumes:
+      - /tmp:/tmp:ro

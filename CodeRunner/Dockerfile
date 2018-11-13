@@ -5,4 +5,4 @@ RUN apt-get install build-essential -y
 RUN mkdir /code
 WORKDIR /code
 ADD . /code/
-CMD cat test.cpp
+CMD cat tmp/*.cpp
