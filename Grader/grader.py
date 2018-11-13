@@ -11,7 +11,9 @@ def hello():
     f = open("test.tar").read()
     container.put_archive("/code", f)
     container.start()
-    return container.logs()
+    logs = container.logs()
+    container.kill()
+    return logs
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
