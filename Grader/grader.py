@@ -15,7 +15,7 @@ def run_submission():
         t.add(request.form.get('file_path'))
 
     # Create container and copy archive containing submission over to it
-    container = client.containers.create('acm_website_runner', auto_remove=False)
+    container = client.containers.create('acmwebsite_runner', auto_remove=False)
     container.put_archive('/code', open('test.tar', 'rb').read())
 
     # Start container and record its logs
