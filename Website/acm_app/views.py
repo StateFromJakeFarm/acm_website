@@ -5,7 +5,7 @@ from . import forms
 from .helpers import store_uploaded_file, run_submission
 
 def login(request):
-    return render(request, "login.html")
+    return render(request, 'registration/login.html')
 
 def register(request):
     if request.method == 'POST':
@@ -20,10 +20,10 @@ def register(request):
     context = {
         'form': registration_form
     }
-    return render(request, "register.html", context=context)
+    return render(request, 'registration/register.html', context=context)
 
 def home(request):
-    return render(request, "home.html")
+    return render(request, 'home.html')
 
 def problems(request):
     if request.method == 'POST':
@@ -43,7 +43,7 @@ def problems(request):
         'form': form
     }
 
-    return render(request, "problem.html", context=context)
+    return render(request, 'problem.html', context=context)
 
 def leaderboard(request):
-    return render(request, "home.html")
+    return render(request, 'home.html')
