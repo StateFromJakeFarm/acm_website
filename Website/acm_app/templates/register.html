@@ -9,19 +9,17 @@
 
 {% block content %}
 
-<body>
-    <form class="form-signin" action="/accounts/register/" method="post">
-        {% csrf_token %}
-        <div class="text-center">
-            <img class="mb-4" src="{% static 'images/chicoacm.png' %}" alt="" width="72" height="72">
-            <h1 class="h3 mb-3 font-weight-normal">Create Account</h1>
-        </div>
-        {{ form.error }}
-        {{ form.email|as_crispy_field }}<br>
-        {{ form.password1|as_crispy_field }}<br>
-        {{ form.password2|as_crispy_field }}<br>
-        <input type="submit" value="Register"/>
-    </form>
-</body>
+<form class="form-signin" action="/accounts/register/" method="post">
+    {% csrf_token %}
+    <div class="text-center">
+        <img class="mb-4" src="{% static 'images/chicoacm.png' %}" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Create Account</h1>
+    </div>
+    {{ form.error }}
+    {{ form.email|as_crispy_field }}<br>
+    {{ form.password1|as_crispy_field }}<br>
+    {{ form.password2|as_crispy_field }}<br>
+    <input type="submit" value="Register"/>
+</form>
 
 {% endblock content %}

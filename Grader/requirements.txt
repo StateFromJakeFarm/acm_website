@@ -1,2 +1,2 @@
-Flask
-docker
+Flask==1.0.2
+docker==3.5.1

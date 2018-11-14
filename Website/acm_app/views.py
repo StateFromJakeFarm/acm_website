@@ -32,12 +32,18 @@ def problems(request):
 
         # Save file locally (on shared volume?) so Grader and CodeRunner can
         # use it
-        local_file_path = store_uploaded_file(request.FILES['submission'], '/tmp')
+        local_file_path = store_uploaded_file(request.FILES['solution_file'], '/tmp')
 
         # Tell grader/backend container to run this code
         print(run_submission(local_file_path))
+    else:
+        form = forms.ProblemSubmissionForm()
 
-    return render(request, "problem.html")
+    context = {
+        'form': form
+    }
+
+    return render(request, "problem.html", context=context)
 
 def leaderboard(request):
     return render(request, "home.html")
