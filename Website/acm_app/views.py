@@ -8,7 +8,19 @@ def login(request):
     return render(request, "login.html")
 
 def register(request):
-    return render(request, "register.html")
+    if request.method == 'POST':
+        registration_form = forms.RegistrationForm(request.POST)
+        print(request.GET)
+        if registration_form.is_valid():
+            registration_form.save(commit=True)
+            return redirect('/')
+    else:
+        registration_form = forms.RegistrationForm()
+    
+    context = {
+        'form': registration_form
+    }
+    return render(request, "register.html", context=context)
 
 def home(request):
     return render(request, "home.html")
