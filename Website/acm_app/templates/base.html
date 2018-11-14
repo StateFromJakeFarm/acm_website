@@ -19,6 +19,35 @@
 
 <body>
     <!-- Content Starts Here-->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="">ACM</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarLeft">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item { page.home }">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item { page.problems } ">
+                    <a class="nav-link" href="/problems">Problems</a>
+                </li>
+                <li class="nav-item { page.leaaderboard }">
+                    <a class="nav-link" href="/leaderboard">Leaderboard</a>
+                </li>
+            </ul>
+        </div>
+        <div class="collapse navbar-collapse navbar-right" id="navbarRight">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item { page.signIn }">
+                    <a class="nav-link" href="/accounts/login/">Sign In</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
     {% block content %}
     {% endblock content %}
     <!-- Content Ends Here-->
