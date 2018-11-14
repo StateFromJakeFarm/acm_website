@@ -5,6 +5,10 @@ from django.contrib.auth.models import User
 class ProblemSubmissionForm(forms.Form):
     solution_file = forms.FileField()
 
+class CreateOrEditProblemForm(forms.Form):
+    title = forms.CharField()
+    description = forms.CharField()
+
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(
         label='Email',
@@ -22,5 +26,3 @@ class RegistrationForm(UserCreationForm):
             user.save()
 
         return user
-
-
