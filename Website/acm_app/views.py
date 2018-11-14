@@ -1,4 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 
 from . import forms
@@ -6,6 +7,10 @@ from .helpers import store_uploaded_file, run_submission
 
 def login(request):
     return render(request, 'registration/login.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')
 
 def register(request):
     if request.method == 'POST':

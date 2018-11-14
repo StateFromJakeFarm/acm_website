@@ -124,5 +124,6 @@ STATIC_URL = '/static/'
 # Crispy forms bootstrap version
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-# Go here after logging-in
+# Login settings
 LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/accounts/login/'

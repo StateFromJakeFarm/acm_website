@@ -12,7 +12,7 @@
     <form class="form-signin" action="/accounts/login/" method="post">
         {% csrf_token %}
         <img class="mb-4" src="{% static 'images/chicoacm.png' %}" alt="" width="72" height="72">
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+        <h1 class="h3 mb-3 font-weight-normal">Sign In</h1>
         {{ form|crispy }}
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
         <a class="btn btn-lg btn-primary btn-block" href="/accounts/register/">Sign up</button>
