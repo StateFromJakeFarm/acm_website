@@ -48,6 +48,9 @@ def home(request):
     return render(request, 'home.html')
 
 def problems(request):
+
+    code = ''
+
     if request.method == 'POST':
         # Handle problem submission uploads
         submission_form = forms.ProblemSubmissionForm(request.POST, request.FILES)
@@ -57,13 +60,15 @@ def problems(request):
         local_file_path = store_uploaded_file(request.FILES['solution_file'], '/tmp')
 
         # Tell grader/backend container to run this code
-        print(run_submission(local_file_path))
+        code = run_submission(local_file_path).decode('utf-8')
+
     else:
         # Present form to user
         submission_form = forms.ProblemSubmissionForm()
 
     context = {
-        'form': submission_form
+        'form': submission_form,
+        'code' : code
     }
 
     return render(request, 'problem.html', context=context)
