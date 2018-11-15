@@ -68,7 +68,8 @@ def problems(request):
 
     context = {
         'form': submission_form,
-        'code' : code
+        'code' : code,
+        'problems': models.ProblemModel.objects.all().order_by('-id')
     }
 
     return render(request, 'problem.html', context=context)
