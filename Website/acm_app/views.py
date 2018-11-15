@@ -8,27 +8,43 @@ from . import models
 from .helpers import store_uploaded_file, run_submission
 
 def login(request):
+    '''
+    Send user to login page
+    '''
     return render(request, 'registration/login.html')
 
 def logout_view(request):
+    '''
+    Log user out and redirect to homepage
+    '''
     logout(request)
+
     return redirect('/')
 
 def register(request):
+    '''
+    Create and process account creation form
+    '''
     if request.method == 'POST':
+        # Use form response to create new account
         registration_form = forms.RegistrationForm(request.POST)
         if registration_form.is_valid():
             registration_form.save(commit=True)
             return redirect('/')
     else:
+        # Present form to user
         registration_form = forms.RegistrationForm()
     
     context = {
         'form': registration_form
     }
+
     return render(request, 'registration/register.html', context=context)
 
 def home(request):
+    '''
+    Render homepage.
+    '''
     return render(request, 'home.html')
 
 def problems(request):
@@ -53,11 +69,18 @@ def problems(request):
     return render(request, 'problem.html', context=context)
 
 def leaderboard(request):
+    '''
+    TODO: Render leaderboard
+    '''
     return render(request, 'home.html')
 
 @login_required
 def create_or_edit_problem(request):
+    '''
+    Handle problem creation and editing
+    '''
     if request.method == 'POST':
+        # Use submitted form to create/update problem info within model
         edit_form = forms.CreateOrEditProblemForm(request.POST)
         if edit_form.is_valid():
             edited = models.ProblemModel(
@@ -68,7 +91,9 @@ def create_or_edit_problem(request):
             )
             edited.save()
     else:
+        # Present form to user
         edit_form = forms.CreateOrEditProblemForm()
+
     context = {
         'form': edit_form
     }

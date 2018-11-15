@@ -6,10 +6,16 @@ class ProblemSubmissionForm(forms.Form):
     solution_file = forms.FileField()
 
 class CreateOrEditProblemForm(forms.Form):
+    '''
+    Manage problem creations and edits
+    '''
     title = forms.CharField()
     description = forms.CharField()
 
 class RegistrationForm(UserCreationForm):
+    '''
+    Manage creation of new users
+    '''
     email = forms.EmailField(
         label='Email',
         required=True
