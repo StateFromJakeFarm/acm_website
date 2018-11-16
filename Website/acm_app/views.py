@@ -1,7 +1,11 @@
+import os
+
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth import logout
 from django.template.defaultfilters import slugify
 from django.contrib.auth.decorators import login_required
+from django.core.files.storage import DefaultStorage
+from django.conf import settings
 
 from . import forms
 from . import models
@@ -30,7 +34,7 @@ def register(request):
         registration_form = forms.RegistrationForm(request.POST)
         if registration_form.is_valid():
             registration_form.save(commit=True)
-            return redirect('/')
+            return redirect('/accounts/login/')
     else:
         # Present form to user
         registration_form = forms.RegistrationForm()
@@ -47,21 +51,20 @@ def home(request):
     '''
     return render(request, 'home.html')
 
-def problems(request):
+def all_problems(request):
 
     code = ''
 
     if request.method == 'POST':
         # Handle problem submission uploads
         submission_form = forms.ProblemSubmissionForm(request.POST, request.FILES)
+        if submission_form.is_valid():
+            # Save file locally (on shared volume?) so Grader and CodeRunner can
+            # use it
+            local_file_path = store_uploaded_file(request.FILES['solution_file'], '/tmp')
 
-        # Save file locally (on shared volume?) so Grader and CodeRunner can
-        # use it
-        local_file_path = store_uploaded_file(request.FILES['solution_file'], '/tmp')
-
-        # Tell grader/backend container to run this code
-        code = run_submission(local_file_path).decode('utf-8')
-
+            # Tell grader/backend container to run this code
+            code = run_submission(local_file_path, testcases_archive).decode('utf-8')
     else:
         # Present form to user
         submission_form = forms.ProblemSubmissionForm()
@@ -70,6 +73,28 @@ def problems(request):
         'form': submission_form,
         'code' : code,
         'problems': models.ProblemModel.objects.all().order_by('-id')
+    }
+
+    return render(request, 'all_problems.html', context=context)
+
+def problem(request, slug=''):
+
+    test_results = ''
+
+    if request.method == 'POST':
+        submission_form = forms.ProblemSubmissionForm(request.POST, request.FILES)
+        if submission_form.is_valid():
+            local_file_path = store_uploaded_file(request.FILES['solution_file'], '/tmp')
+            problem = models.ProblemModel.objects.get(slug=slug)
+            testcases_path = os.path.join(settings.MEDIA_ROOT, str(problem.testcases))
+            test_results = run_submission(local_file_path, testcases_path).decode('utf-8')
+    else:
+        # Present form to user
+        submission_form = forms.ProblemSubmissionForm()
+
+    context = {
+        'test_results': test_results,
+        'form': submission_form
     }
 
     return render(request, 'problem.html', context=context)
@@ -87,15 +112,17 @@ def create_or_edit_problem(request):
     '''
     if request.method == 'POST':
         # Use submitted form to create/update problem info within model
-        edit_form = forms.CreateOrEditProblemForm(request.POST)
+        edit_form = forms.CreateOrEditProblemForm(request.POST, request.FILES)
         if edit_form.is_valid():
             edited = models.ProblemModel(
                 title = edit_form.cleaned_data['title'],
                 slug = slugify(edit_form.cleaned_data['title']),
                 description = edit_form.cleaned_data['description'],
-                author = request.user
+                author = request.user,
+                testcases = request.FILES['testcases']
             )
             edited.save()
+            return redirect('/problems')
     else:
         # Present form to user
         edit_form = forms.CreateOrEditProblemForm()

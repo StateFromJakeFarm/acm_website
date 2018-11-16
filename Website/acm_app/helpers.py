@@ -15,11 +15,14 @@ def store_uploaded_file(posted_file, local_dir):
 
     return local_file_path
 
-def run_submission(file_path):
+def run_submission(submission_path, testcases_path):
     '''
     Send POST request to grader container to make it run submitted code
     '''
-    payload = {'file_path': file_path}
+    payload = {
+        'submission': submission_path,
+        'testcases': testcases_path
+    }
     r = requests.post('http://0.0.0.0:5000', data=payload)
 
     return r.content
