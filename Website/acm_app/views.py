@@ -53,25 +53,7 @@ def home(request):
 
 def all_problems(request):
 
-    code = ''
-
-    if request.method == 'POST':
-        # Handle problem submission uploads
-        submission_form = forms.ProblemSubmissionForm(request.POST, request.FILES)
-        if submission_form.is_valid():
-            # Save file locally (on shared volume?) so Grader and CodeRunner can
-            # use it
-            local_file_path = store_uploaded_file(request.FILES['solution_file'], '/tmp')
-
-            # Tell grader/backend container to run this code
-            code = run_submission(local_file_path, testcases_archive).decode('utf-8')
-    else:
-        # Present form to user
-        submission_form = forms.ProblemSubmissionForm()
-
     context = {
-        'form': submission_form,
-        'code' : code,
         'problems': models.ProblemModel.objects.all().order_by('-id')
     }
 
@@ -87,7 +69,7 @@ def problem(request, slug=''):
             local_file_path = store_uploaded_file(request.FILES['solution_file'], '/tmp')
             problem = models.ProblemModel.objects.get(slug=slug)
             testcases_path = os.path.join(settings.MEDIA_ROOT, str(problem.testcases))
-            test_results = run_submission(local_file_path, testcases_path).decode('utf-8')
+            test_results = run_submission(local_file_path, testcases_path).decode('utf-8').strip()
     else:
         # Present form to user
         submission_form = forms.ProblemSubmissionForm()

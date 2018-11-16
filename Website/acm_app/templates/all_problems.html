@@ -5,17 +5,9 @@
 
 {% block content %}
 
-<div id="submissionContainer" class="text-center" style="padding-top: 200px">
-    <form action="/problems" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <input type="submit" value="Submit"/>
-    </form>
+<div style="padding-top: 150px"/>
 
-    <code>{{code}}</code>
-</div>
-
-<a class="btn" href="/edit/">Create New Problem</a>
+<a class="btn" href="/edit/" style="padding-bottom: 50px">Create New Problem</a>
 <div id="problemContainer">
     {% for p in problems %}
         <div id="problem{{ p.id }}">

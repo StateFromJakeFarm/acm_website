@@ -27,14 +27,14 @@ def run_submission():
         environment=environment)
 
     # Put testfiles and submssion in as archives
-    container.put_archive('/code', open(request.form.get('testcases'), 'rb').read())
+    container.put_archive('/code/tests', open(request.form.get('testcases'), 'rb').read())
     container.put_archive('/code', open('submission.tar', 'rb').read())
 
     # Start container and record its logs
     container.start()
 
-    # RACE CONDITION: container will die when this function exits, need a more robust fix...
-    time.sleep(5)
+    # Block function until container finishes running (may want timeout in future)
+    container.wait()
 
     logs = container.logs()
     try:
