@@ -12,7 +12,7 @@ services:
       - "8000:8000"
     network_mode: host
     restart: always
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: python3 manage.py runserver 0.0.0.0:80
 
   # The backend container
   backend:
