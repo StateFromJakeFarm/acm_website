@@ -10,7 +10,7 @@ class CreateOrEditProblemForm(forms.Form):
     Manage problem creations and edits
     '''
     title       = forms.CharField()
-    description = forms.CharField()
+    description = forms.CharField(widget=forms.Textarea)
     testcases   = forms.FileField()
 
 class RegistrationForm(UserCreationForm):
