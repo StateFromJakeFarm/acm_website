@@ -43,16 +43,19 @@
             </ul>
         </div>
         <div class="collapse navbar-collapse navbar-right" id="navbarRight">
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <span style="color: white">{{ request.user.username }}</span>
+                    <span class="nav-link">Logged in as {{ request.user.username }}</span>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/accounts/logout/">Log Out</a>
                 </li>
                 {% else %}
-                <li class="nav-item { page.signIn }">
+                <li class="nav-item { page.register }">
+                    <a class="nav-link" href="/accounts/register/">Register</a>
+                </li>
+                <li class="nav-item { page.signn }">
                     <a class="nav-link" href="/accounts/login/">Sign In</a>
                 </li>
                 {% endif %}
