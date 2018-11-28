@@ -12,7 +12,7 @@ services:
       - "8000:8000"
     network_mode: host
     restart: always
-    command: python3 manage.py runserver 0.0.0.0:80
+    command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:80"
 
   # The backend container
   backend:
