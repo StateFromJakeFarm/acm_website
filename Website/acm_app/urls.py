@@ -1,5 +1,7 @@
 from django.urls import path
+from django.conf.urls import url, include
 from django.contrib.auth import views as adminviews
+from markdownx import urls as markdownx
 
 from . import views
 
@@ -14,4 +16,5 @@ urlpatterns = [
     path('problems/<slug:slug>', views.problem, name='single problem'),    # Submission page for single problem
     path('edit/', views.create_or_edit_problem, name='edit'),              # Create and edit problems
     path('leaderboard', views.leaderboard, name='leaderboards'),           # School-wide leaderboard
+    url(r'^markdownx/', include(markdownx)),
 ]
