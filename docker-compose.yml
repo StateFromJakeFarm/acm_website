@@ -8,11 +8,15 @@ services:
       - ./Website:/code
       - ./Website/media:/code/media
       - /tmp:/tmp
-    ports:
-      - "8000:8000"
-    network_mode: host
+    expose:
+      - "8000"
     restart: always
-    command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:80"
+    command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
+
+
+
+
+
 
   # The backend container
   backend:
@@ -24,12 +28,36 @@ services:
       - /tmp:/tmp:ro
     ports:
       - "5000:5000"
-    network_mode: host
+    depends_on:
+      - website
     restart: always
     command: python3 grader.py
+
+
+
+
   
   # Runner container, will immediatley exit
   runner:
     build: ./CodeRunner
     volumes:
       - /tmp:/tmp:ro
+
+
+
+
+
+
+  # Nginx for front end, gets redirected to django
+  nginx:
+    restart: always
+    build: ./Nginx/
+    depends_on:
+      - website
+    ports:
+      - "80:80"
+    #  - "443:443"
+    #     volumes:
+    #        - ./code/static:/static
+    links:
+      - website:website
