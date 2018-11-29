@@ -1,3 +1,5 @@
+{% load static %}
+
 <!doctype html>
 <html lang="en">
 
@@ -10,11 +12,13 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
         crossorigin="anonymous">
 
+    <link rel="shortcut icon" type="image/png" href="{% static 'images' %}/favicon.ico"/>
+
     <!--Add More Style sheets here-->
     {% block styles %}
     {% endblock styles %}
 
-    <title> {{ title }} </title>
+    <title> {{ nbar }} </title>
 </head>
 
 <body>
@@ -27,28 +31,31 @@
 
         <div class="collapse navbar-collapse" id="navbarLeft">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item { page.home }">
+                <li class="nav-item {% if nbar == 'Home' %}active{% endif %}">
                     <a class="nav-link" href="/">Home</a>
                 </li>
-                <li class="nav-item { page.problems } ">
+                <li class="nav-item {% if nbar == 'Problems' %}active{% endif %}">
                     <a class="nav-link" href="/problems">Problems</a>
                 </li>
-                <li class="nav-item { page.leaaderboard }">
+                <li class="nav-item {% if nbar == 'Leaderboard' %}active{% endif %}">
                     <a class="nav-link" href="/leaderboard">Leaderboard</a>
                 </li>
             </ul>
         </div>
         <div class="collapse navbar-collapse navbar-right" id="navbarRight">
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <span style="color: white">{{ request.user.username }}</span>
+                    <span class="navbar-text">Logged in as {{ request.user.username }}</span>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/accounts/logout/">Log Out</a>
                 </li>
                 {% else %}
-                <li class="nav-item { page.signIn }">
+                <li class="nav-item {% if nbar == 'Register' %}active{% endif %}">
+                    <a class="nav-link" href="/accounts/register/">Register</a>
+                </li>
+                <li class="nav-item {% if nbar == 'Login' %}active{% endif %}">
                     <a class="nav-link" href="/accounts/login/">Sign In</a>
                 </li>
                 {% endif %}
