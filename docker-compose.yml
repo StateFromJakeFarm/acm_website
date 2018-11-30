@@ -10,7 +10,6 @@ services:
       - /tmp:/tmp
     expose:
       - "8000"
-
     links:
       - backend:backend
     restart: always
@@ -31,8 +30,6 @@ services:
       - /tmp:/tmp:ro
     expose:
       - "5000"
-    depends_on:
-      - website
     restart: always
     command: python3 grader.py
 
