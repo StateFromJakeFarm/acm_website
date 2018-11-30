@@ -11,7 +11,7 @@ class CreateOrEditProblemForm(forms.Form):
     '''
     title       = forms.CharField()
     description = forms.CharField()
-    testcases   = forms.FileField()
+    testcases   = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
 
 class RegistrationForm(UserCreationForm):
     '''

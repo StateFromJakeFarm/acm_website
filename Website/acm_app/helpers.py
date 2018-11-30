@@ -23,6 +23,6 @@ def run_submission(submission_path, testcases_path):
         'submission': submission_path,
         'testcases': testcases_path
     }
-    r = requests.post('http://0.0.0.0:5000', data=payload)
+    r = requests.post('http://backend:5000', data=payload)
 
     return r.content
