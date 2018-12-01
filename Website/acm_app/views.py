@@ -1,4 +1,5 @@
 import os
+import tarfile
 
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth import logout, login, authenticate
@@ -122,13 +123,29 @@ def create_or_edit_problem(request):
     if request.method == 'POST':
         # Use submitted form to create/update problem info within model
         edit_form = forms.CreateOrEditProblemForm(request.POST, request.FILES)
+        
         if edit_form.is_valid():
+
+            # Get slug first so we can use it to name the file
+            slug=slugify(edit_form.cleaned_data['title'])
+
+            # Get the list of uploaded files
+            myfiles = request.FILES.getlist('testcases')
+
+            testcasepath = settings.MEDIA_ROOT + '/testcase_' + slug + '.tar'
+
+            # Create tar file containing testcases
+            with tarfile.open(testcasepath, mode='w|gz') as t:
+                for f in myfiles:
+                    path = store_uploaded_file(f, '/tmp/')
+                    t.add(path, arcname=f.name)
+
             edited = models.ProblemModel(
                 title=edit_form.cleaned_data['title'],
-                slug=slugify(edit_form.cleaned_data['title']),
+                slug=slug,
                 description=edit_form.cleaned_data['description'],
                 author=request.user,
-                testcases=request.FILES['testcases']
+                testcases=testcasepath
             )
             edited.save()
             return redirect('/problems')

@@ -10,6 +10,8 @@ services:
       - /tmp:/tmp
     expose:
       - "8000"
+    links:
+      - backend:backend
     restart: always
     command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
 
@@ -26,10 +28,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./Website/media:/code/media:ro
       - /tmp:/tmp:ro
-    ports:
-      - "5000:5000"
-    depends_on:
-      - website
+    expose:
+      - "5000"
     restart: always
     command: python3 grader.py
 

@@ -11,8 +11,8 @@ class CreateOrEditProblemForm(forms.Form):
     Manage problem creations and edits
     '''
     title       = forms.CharField()
-    description = MarkdownxFormField()
-    testcases   = forms.FileField()
+    description = forms.CharField()
+    testcases   = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
 
 class RegistrationForm(UserCreationForm):
     '''
