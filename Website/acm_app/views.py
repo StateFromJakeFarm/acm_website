@@ -11,6 +11,7 @@ from django.conf import settings
 from . import forms
 from . import models
 from .helpers import store_uploaded_file, run_submission
+from markdown import markdown
 
 
 # def login_view(request):
@@ -94,8 +95,10 @@ def problem(request, slug=''):
     else:
         # Present form to user
         submission_form = forms.ProblemSubmissionForm()
+        description = models.ProblemModel.objects.filter(slug=slug)[0].description
 
     context = {
+        'description': markdown(description),
         'test_results': test_results,
         'form': submission_form,
         'nbar': 'Problems'

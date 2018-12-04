@@ -6,6 +6,9 @@
 {% block content %}
 
 <div id="problemContainer" style="padding-top: 200px">
+    <div id="problemDescription">
+    {{ description|safe }}
+    </div>
     <form method="post" enctype="multipart/form-data" onsubmit="document.getElementById('spinner').style.display = 'inline'">
         {% csrf_token %}
         {{ form|crispy }}
