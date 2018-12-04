@@ -79,6 +79,7 @@ def all_problems(request):
 
 def problem(request, slug=''):
 
+    description = models.ProblemModel.objects.filter(slug=slug)[0].description
     test_results = ''
 
     if request.method == 'POST':
@@ -95,7 +96,6 @@ def problem(request, slug=''):
     else:
         # Present form to user
         submission_form = forms.ProblemSubmissionForm()
-        description = models.ProblemModel.objects.filter(slug=slug)[0].description
 
     context = {
         'description': markdown(description),
