@@ -3,20 +3,30 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+
+{% block styles %}
+<link href="{% static 'index/index.css' %}" rel="stylesheet">
+{% endblock styles %}
+
+
 {% block content %}
 
-<div style="padding-top: 150px">
+<div class="starter-template">
 
 <a class="btn" href="/edit/" style="padding-bottom: 50px">Create New Problem</a>
+
+
 <div id="problemContainer">
     {% for p in problems %}
-        <div id="problem{{ p.id }}">
+        <div class="card" id="problem{{ p.id }}">
+        <div class="card-body">
             <span><h3><a href="problems/{{ p.slug }}">{{ p.title }}</a></h3></span>
             <span>By {{ p.author }}</span>
             <div>
                 <p>{{ p.description }}</p>
                 <span>{{ p.testcases }}</span>
             </div>
+        </div>
         </div>
     {% endfor %}
 </div>
