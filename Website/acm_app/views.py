@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.files.storage import DefaultStorage
 from django.conf import settings
 from django.utils.safestring import mark_safe
+from django.contrib.auth.decorators import permission_required
 import json
 
 
@@ -121,8 +122,8 @@ def leaderboard(request):
 
     return render(request, 'home.html', context=context)
 
-
 @login_required
+@permission_required('user.is_staff', raise_exception=True)
 def create_or_edit_problem(request):
     '''
     Handle problem creation and editing

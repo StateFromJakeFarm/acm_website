@@ -13,8 +13,9 @@
 
 <div class="starter-template">
 
+{% if request.user.is_staff %}
 <a class="btn" href="/edit/" style="padding-bottom: 50px">Create New Problem</a>
-
+{% endif %}
 
 <div id="problemContainer">
     {% for p in problems %}
