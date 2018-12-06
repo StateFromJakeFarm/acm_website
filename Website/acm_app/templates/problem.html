@@ -5,19 +5,20 @@
 
 {% block content %}
 
-<div id="problemContainer" style="padding-top: 200px">
+<div id="problemContainer" style="padding-top: 200px; padding-left: 100px; padding-right: 100px;">
     <div id="problemDescription">
     {{ description|safe }}
     </div>
+    <h4 style="padding-top: 50px">Submit Solution</h4>
     <form method="post" enctype="multipart/form-data" onsubmit="document.getElementById('spinner').style.display = 'inline'">
         {% csrf_token %}
-        {{ form|crispy }}
+        {{ form.solution_file }}
         <input type="submit" value="Submit"/>
     </form>
 </div>
 
 
-<div id="testResults" class="text-center" style="padding-top: 100px">
+<div id="testResults" class="text-center" style="padding-top: 50px">
     <img id="spinner" src="{% static 'images' %}/spinner.gif" height="50" width="50" style="display: none;">
     <span><h4>Test Results:</h4></span>
     <pre>{{ test_results }}</pre>
