@@ -1,4 +1,7 @@
 Django==2.1.4
+channels
+channels_redis
+psycopg2-binary
 requests==2.20.1
 django-crispy-forms==1.7.2
 django-markdownx

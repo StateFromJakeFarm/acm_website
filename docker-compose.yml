@@ -12,6 +12,8 @@ services:
       - "8000"
     links:
       - backend:backend
+      - redis:redis
+      - postgres:postgres
     restart: always
     command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
 
@@ -61,3 +63,15 @@ services:
     #        - ./code/static:/static
     links:
       - website:website
+
+
+  # Redis for django channels      
+  redis:
+    image: redis
+    expose: 
+      - "6379"
+
+  postgres:
+    image: postgres
+    expose:
+      - "5432"

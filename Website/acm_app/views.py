@@ -7,6 +7,10 @@ from django.template.defaultfilters import slugify
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import DefaultStorage
 from django.conf import settings
+from django.utils.safestring import mark_safe
+import json
+
+
 
 from . import forms
 from . import models
@@ -162,3 +166,21 @@ def create_or_edit_problem(request):
     }
 
     return render(request, 'edit.html', context=context)
+
+
+def chat(request):
+
+    context = {
+        'nbar': 'Chat'
+    }
+
+    return render(request, 'chat/chat.html', context=context)
+
+def room(request, room_name):
+
+    context = {
+        'nbar': 'Chat',
+        'room_name_json': mark_safe(json.dumps(room_name)),
+    }
+
+    return render(request, 'chat/room.html', context=context)
