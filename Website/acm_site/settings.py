@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'crispy_forms',
     'markdownx',
     'acm_app',
@@ -78,8 +79,11 @@ WSGI_APPLICATION = 'acm_site.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'HOST': 'postgres',
+        'PORT': 5432,
     }
 }
 
@@ -131,3 +135,15 @@ LOGIN_URL = '/accounts/login/'
 
 # Upload location
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# Channels
+ASGI_APPLICATION = 'acm_site.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis', 6379)],
+        },
+    },
+}

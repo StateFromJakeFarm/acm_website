@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from django.conf.urls import url, include
 from django.contrib.auth import views as adminviews
 from markdownx import urls as markdownx
@@ -17,4 +17,6 @@ urlpatterns = [
     path('edit/', views.create_or_edit_problem, name='edit'),              # Create and edit problems
     path('leaderboard', views.leaderboard, name='leaderboards'),           # School-wide leaderboard
     url(r'^markdownx/', include(markdownx)),
+    path('chat/', views.chat, name='chat'),
+    re_path(r'^chat/(?P<room_name>[^/]+)/$', views.room, name='room'),
 ]

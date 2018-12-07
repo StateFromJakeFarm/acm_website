@@ -3,25 +3,50 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+{% block styles %}
+<link href="{% static 'index/index.css' %}" rel="stylesheet">
+{% endblock styles %}
+
+
 {% block content %}
 
+<<<<<<< HEAD
 <div id="problemContainer" style="padding-top: 200px; padding-left: 100px; padding-right: 100px;">
+=======
+<div class="starter-template">
+
+<div class="container" id="problemContainer" style="padding-bottom: 50px">
+>>>>>>> d8801f4a2d45522d394dc0e52179c349ca298e7b
     <div id="problemDescription">
     {{ description|safe }}
     </div>
     <h4 style="padding-top: 50px">Submit Solution</h4>
     <form method="post" enctype="multipart/form-data" onsubmit="document.getElementById('spinner').style.display = 'inline'">
         {% csrf_token %}
+<<<<<<< HEAD
         {{ form.solution_file }}
         <input type="submit" value="Submit"/>
+=======
+        {{ form|crispy }}
+        <input class="btn" type="submit" value="Submit"/>
+>>>>>>> d8801f4a2d45522d394dc0e52179c349ca298e7b
     </form>
+
+    
 </div>
 
+<img id="spinner" src="{% static 'images' %}/spinner.gif" height="50" width="50" style="display: none;">
 
 <div id="testResults" class="text-center" style="padding-top: 50px">
+<<<<<<< HEAD
     <img id="spinner" src="{% static 'images' %}/spinner.gif" height="50" width="50" style="display: none;">
+=======
+    
+>>>>>>> d8801f4a2d45522d394dc0e52179c349ca298e7b
     <span><h4>Test Results:</h4></span>
     <pre>{{ test_results }}</pre>
+</div>
+
 </div>
 
 {% endblock content %}
