@@ -91,11 +91,16 @@ def problem(request, slug=''):
         submission_form = forms.ProblemSubmissionForm(
             request.POST, request.FILES)
         if submission_form.is_valid():
+            # Save file to /tmp
             local_file_path = store_uploaded_file(
                 request.FILES['solution_file'], '/tmp')
+
+            # Grab testcases for this problem
             problem = models.ProblemModel.objects.get(slug=slug)
             testcases_path = os.path.join(
                 settings.MEDIA_ROOT, str(problem.testcases))
+
+            # Run submission and get results from grader container
             test_results = run_submission(
                 local_file_path, testcases_path).decode('utf-8').strip()
     else:

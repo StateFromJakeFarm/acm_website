@@ -1,12 +1,22 @@
 import os
 import requests
 
+from hashlib import md5
+from random import randrange
+
 def store_uploaded_file(posted_file, local_dir):
     '''
     Save a POST'ed file locally on the server and return path to local
     version of file
     '''
-    local_file_path = os.path.join(local_dir, posted_file.name)
+    # Use unique file name to avoid race condition where simultaneous
+    # submissions with same file name clobber each other
+    hash_obj = md5()
+    hash_obj.update(str(randrange(1337)).encode('utf-8'))
+    unique_name = hash_obj.hexdigest() + posted_file.name
+
+    # Write solution file to disk
+    local_file_path = os.path.join(local_dir, unique_name)
     with open(local_file_path, 'wb+') as dest:
         for chunk in posted_file.chunks():
             # Write in chunks so whole file doesn't get loaded into memory all
