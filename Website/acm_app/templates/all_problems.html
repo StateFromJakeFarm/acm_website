@@ -17,16 +17,12 @@
 <a class="btn" href="/edit/" style="padding-bottom: 50px">Create New Problem</a>
 {% endif %}
 
-<div id="problemContainer">
+<div id="problemContainer" class="card-columns">
     {% for p in problems %}
         <div class="card" id="problem{{ p.id }}">
         <div class="card-body">
             <span><h3><a href="problems/{{ p.slug }}">{{ p.title }}</a></h3></span>
             <span>By {{ p.author }}</span>
-            <div>
-                <p>{{ p.description }}</p>
-                <span>{{ p.testcases }}</span>
-            </div>
         </div>
         </div>
     {% endfor %}
