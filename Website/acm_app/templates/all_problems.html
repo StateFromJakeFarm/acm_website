@@ -23,6 +23,9 @@
         <div class="card-body">
             <span><h3><a href="problems/{{ p.slug }}">{{ p.title }}</a></h3></span>
             <span>By {{ p.author }}</span>
+            {% if request.user.is_staff %}
+            <div><a href="edit/{{ p.slug }}">Edit</a></div>
+            {% endif %}
         </div>
         </div>
     {% endfor %}

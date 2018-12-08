@@ -14,7 +14,8 @@ urlpatterns = [
     path('accounts/logout/', views.logout_view, name='logout'),            # Logout of account
     path('problems', views.all_problems, name='all problems'),             # Browse and solve problems
     path('problems/<slug:slug>', views.problem, name='single problem'),    # Submission page for single problem
-    path('edit/', views.create_or_edit_problem, name='edit'),              # Create and edit problems
+    path('edit/', views.create_or_edit_problem, name='create'),            # Create new problem
+    path('edit/<slug:slug>', views.create_or_edit_problem, name='edit'),   # Edit existing problem
     path('leaderboard', views.leaderboard, name='leaderboards'),           # School-wide leaderboard
     url(r'^markdownx/', include(markdownx)),
     path('chat/', views.chat, name='chat'),

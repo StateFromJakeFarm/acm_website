@@ -129,18 +129,32 @@ def leaderboard(request):
 
 @login_required
 @permission_required('user.is_staff', raise_exception=True)
-def create_or_edit_problem(request):
+def create_or_edit_problem(request, slug=''):
     '''
     Handle problem creation and editing
     '''
+
+    # Get info about this problem if it already exists
+    problem = None
+    problem_info = {}
+    if slug != '':
+        # Grab info for an existing problem
+        for p in models.ProblemModel.objects.filter(slug=slug):
+            # Should only execute once
+            problem = p
+            problem_info = {
+                'title': problem.title,
+                'description': problem.description
+            }
+
     if request.method == 'POST':
         # Use submitted form to create/update problem info within model
         edit_form = forms.CreateOrEditProblemForm(request.POST, request.FILES)
-        
+
         if edit_form.is_valid():
 
             # Get slug first so we can use it to name the file
-            slug=slugify(edit_form.cleaned_data['title'])
+            slug = slugify(edit_form.cleaned_data['title'])
 
             # Get the list of uploaded files
             myfiles = request.FILES.getlist('testcases')
@@ -153,18 +167,30 @@ def create_or_edit_problem(request):
                     path = store_uploaded_file(f, '/tmp/')
                     t.add(path, arcname=f.name)
 
-            edited = models.ProblemModel(
-                title=edit_form.cleaned_data['title'],
-                slug=slug,
-                description=edit_form.cleaned_data['description'],
-                author=request.user,
-                testcases=testcasepath
-            )
-            edited.save()
+            # Get info for problem from form
+            problem_info = {
+                'slug': slug,
+                'author': request.user,
+                'title': edit_form.cleaned_data['title'],
+                'description': edit_form.cleaned_data['description'],
+                'testcases': testcasepath
+            }
+
+            if problem and slug == problem.slug:
+                # Save an updated version of an old problem
+                update_fields = ['title', 'description', 'testcases']
+                for attr in update_fields:
+                    setattr(problem, attr, problem_info[attr])
+
+                problem.save(update_fields=update_fields)
+            else:
+                # Save a completely new problem
+                models.ProblemModel(**problem_info).save()
+
             return redirect('/problems')
     else:
         # Present form to user
-        edit_form = forms.CreateOrEditProblemForm()
+        edit_form = forms.CreateOrEditProblemForm(problem_info)
 
     context = {
         'form': edit_form,
