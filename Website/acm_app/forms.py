@@ -12,7 +12,7 @@ class CreateOrEditProblemForm(forms.Form):
     '''
     title       = forms.CharField()
     description = MarkdownxFormField()
-    testcases   = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    testcases   = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
 
 class RegistrationForm(UserCreationForm):
     '''

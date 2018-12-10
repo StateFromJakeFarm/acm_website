@@ -156,16 +156,17 @@ def create_or_edit_problem(request, slug=''):
             # Get slug first so we can use it to name the file
             slug = slugify(edit_form.cleaned_data['title'])
 
-            # Get the list of uploaded files
+            # Get list of uploaded files
             myfiles = request.FILES.getlist('testcases')
 
+            # Create tar file containing testcases only if new testcases were
+            # uploaded
             testcasepath = settings.MEDIA_ROOT + '/testcase_' + slug + '.tar'
-
-            # Create tar file containing testcases
-            with tarfile.open(testcasepath, mode='w|gz') as t:
-                for f in myfiles:
-                    path = store_uploaded_file(f, '/tmp/')
-                    t.add(path, arcname=f.name)
+            if len(myfiles):
+                with tarfile.open(testcasepath, mode='w|gz') as t:
+                    for f in myfiles:
+                        path = store_uploaded_file(f, '/tmp/')
+                        t.add(path, arcname=f.name)
 
             # Get info for problem from form
             problem_info = {
@@ -178,7 +179,12 @@ def create_or_edit_problem(request, slug=''):
 
             if problem and slug == problem.slug:
                 # Save an updated version of an old problem
-                update_fields = ['title', 'description', 'testcases']
+                update_fields = ['title', 'description']
+
+                if len(myfiles):
+                    # User uploaded new testcases
+                    update_fields.append('testcases')
+
                 for attr in update_fields:
                     setattr(problem, attr, problem_info[attr])
 
@@ -187,7 +193,7 @@ def create_or_edit_problem(request, slug=''):
                 # Save a completely new problem
                 models.ProblemModel(**problem_info).save()
 
-            return redirect('/problems')
+            return redirect('/problems/' + slug)
     else:
         # Present form to user
         edit_form = forms.CreateOrEditProblemForm(problem_info)

@@ -10,7 +10,7 @@ class ProblemModel(models.Model):
     slug        = models.SlugField(unique=True)
     description = MarkdownxField()
     author      = models.ForeignKey(User, on_delete=models.PROTECT)
-    testcases   = models.FileField(upload_to='testcases') # Expecting this to be a tarball of the .in and .out files
+    testcases   = models.FileField(upload_to='testcases', blank=True) # Expecting this to be a tarball of the .in and .out files
 
 class LeaderboardModel(models.Model):
     '''
