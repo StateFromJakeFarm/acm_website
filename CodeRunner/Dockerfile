@@ -7,5 +7,4 @@ RUN mkdir /code
 RUN mkdir /code/tests
 WORKDIR /code
 ADD . /code/
-CMD g++ $SUBMISSION_FILE -std=c++14 && \
-    python3 runtests.py
+CMD python3 build_and_test.py
