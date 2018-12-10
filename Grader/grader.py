@@ -23,8 +23,7 @@ def run_submission():
     }
 
     # Create container
-    container = client.containers.create('acm_website_runner', auto_remove=False,
-        environment=environment)
+    container = client.containers.create('acm_website_runner', environment=environment)
 
     # Put testfiles and submssion in as archives
     container.put_archive('/code/tests', open(request.form.get('testcases'), 'rb').read())
@@ -36,11 +35,12 @@ def run_submission():
     # Block function until container finishes running (may want timeout in future)
     container.wait()
 
+    # Get container logs
     logs = container.logs()
     try:
-        container.kill()
+        container.remove()
     except:
-        print('Could not kill code runner container!', file=sys.stderr)
+        print('Could not remove code runner container!', file=sys.stderr)
 
     return logs
 
