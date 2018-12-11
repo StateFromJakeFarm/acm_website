@@ -2,10 +2,12 @@ import os
 import filecmp
 import subprocess
 
+# Get info on this run from environment variables
 source_file = os.environ['SUBMISSION_FILE']
-ext = source_file.split('.')[-1]
+time_limit = float(os.environ['TIME_LIMIT'])
 
 # Get our compilation command (if need be)
+ext = source_file.split('.')[-1]
 compile_cmd = {
     'cpp': 'g++ {} -std=c++14 -o prog'.format(source_file),
     'cc': 'g++ {} -std=c++14 -o prog'.format(source_file),
@@ -32,23 +34,29 @@ if not compile_cmd and not run_cmd:
     exit(1)
 
 # Run tests
+my_out_file = 'my.out'
 i = 1
 while os.path.exists('tests/t%02d.in' % i):
     in_file = 'tests/t%02d.in' % i
-    out_file = 'tests/t%02d.ans' % i
+    ans_file = 'tests/t%02d.ans' % i
 
-    cmd = '{} < {} > my.out'.format(run_cmd, in_file)
+    cmd_list = run_cmd.split(' ')
 
     print('Testcase {}: '.format(i), end='')
     try:
-        subprocess.run(cmd, shell=True)
-    except subprocess.CalledProcessError as e:
-        print(e.stderr)
-        continue
+        # Run program
+        subprocess.run(cmd_list, stdin=open(in_file), stdout=open(my_out_file, 'w'),
+            timeout=time_limit)
 
-    if filecmp.cmp('my.out', out_file):
-        print('Passed')
-    else:
-        print('Failed')
+        # Check output
+        if filecmp.cmp(my_out_file, ans_file):
+            print('Passed')
+        else:
+            print('Failed')
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
+        if e.__class__.__name__ == 'TimeoutExpired':
+            print('Timeout')
+        else:
+            print(e.stderr)
 
     i += 1
