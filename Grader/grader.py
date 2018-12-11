@@ -19,7 +19,8 @@ def run_submission():
     # Set environment variables so container knows how to navigate all the files
     # it's received
     environment = {
-        'SUBMISSION_FILE': request.form.get('submission')[1:]
+        'SUBMISSION_FILE': request.form.get('submission')[1:],
+        'TIME_LIMIT': request.form.get('time_limit')
     }
 
     # Create container

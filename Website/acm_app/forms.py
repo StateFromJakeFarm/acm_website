@@ -13,6 +13,7 @@ class CreateOrEditProblemForm(forms.Form):
     title       = forms.CharField()
     description = MarkdownxFormField()
     testcases   = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
+    time_limit  = forms.FloatField()
 
 class RegistrationForm(UserCreationForm):
     '''

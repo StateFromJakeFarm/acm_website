@@ -84,7 +84,8 @@ def all_problems(request):
 
 def problem(request, slug=''):
 
-    description = models.ProblemModel.objects.filter(slug=slug)[0].description
+    # Get problem object from database
+    problem = models.ProblemModel.objects.filter(slug=slug)[0]
     test_results = ''
 
     if request.method == 'POST':
@@ -96,21 +97,21 @@ def problem(request, slug=''):
                 request.FILES['solution_file'], '/tmp')
 
             # Grab testcases for this problem
-            problem = models.ProblemModel.objects.get(slug=slug)
             testcases_path = os.path.join(
                 settings.MEDIA_ROOT, str(problem.testcases))
 
             # Run submission and get results from grader container
-            test_results = run_submission(
-                local_file_path, testcases_path).decode('utf-8').strip()
+            test_results = run_submission(local_file_path, testcases_path,
+                problem.time_limit).decode('utf-8').strip()
     else:
         # Present form to user
         submission_form = forms.ProblemSubmissionForm()
 
     context = {
-        'description': markdown(description),
+        'description': markdown(problem.description),
         'test_results': test_results,
         'form': submission_form,
+        'time_limit': problem.time_limit,
         'nbar': 'Problems'
     }
 
@@ -144,7 +145,8 @@ def create_or_edit_problem(request, slug=''):
             problem = p
             problem_info = {
                 'title': problem.title,
-                'description': problem.description
+                'description': problem.description,
+                'time_limit': problem.time_limit
             }
 
     if request.method == 'POST':
@@ -174,12 +176,13 @@ def create_or_edit_problem(request, slug=''):
                 'author': request.user,
                 'title': edit_form.cleaned_data['title'],
                 'description': edit_form.cleaned_data['description'],
-                'testcases': testcasepath
+                'testcases': testcasepath,
+                'time_limit': edit_form.cleaned_data['time_limit']
             }
 
             if problem and slug == problem.slug:
                 # Save an updated version of an old problem
-                update_fields = ['title', 'description']
+                update_fields = ['title', 'description', 'time_limit']
 
                 if len(myfiles):
                     # User uploaded new testcases
