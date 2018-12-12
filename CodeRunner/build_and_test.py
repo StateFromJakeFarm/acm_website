@@ -35,6 +35,7 @@ if not compile_cmd and not run_cmd:
 
 # Run tests
 my_out_file = 'my.out'
+my_err_file = 'my.err'
 i = 1
 while os.path.exists('tests/t%02d.in' % i):
     in_file = 'tests/t%02d.in' % i
@@ -46,17 +47,17 @@ while os.path.exists('tests/t%02d.in' % i):
     try:
         # Run program
         subprocess.run(cmd_list, stdin=open(in_file), stdout=open(my_out_file, 'w'),
-            timeout=time_limit)
+            stderr=open(my_err_file, 'w'), timeout=time_limit)
 
         # Check output
-        if filecmp.cmp(my_out_file, ans_file):
+        err = open(my_err_file).read()
+        if len(err):
+            print('Error:\n{}'.format(err))
+        elif filecmp.cmp(my_out_file, ans_file):
             print('Passed')
         else:
             print('Failed')
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
-        if e.__class__.__name__ == 'TimeoutExpired':
-            print('Timeout')
-        else:
-            print(e.stderr)
+    except subprocess.TimeoutExpired as e:
+        print('Timeout')
 
     i += 1
