@@ -18,7 +18,7 @@ class LeaderboardModel(models.Model):
     '''
     Store a relationship between users and solved porblems
     '''
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     score = models.IntegerField(default=0)
 
     # one to many ProblemModel
