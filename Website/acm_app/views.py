@@ -124,6 +124,7 @@ def problem(request, slug=''):
         submission_form = forms.ProblemSubmissionForm()
 
     context = {
+        'slug' : slug,
         'description': markdown(problem.description),
         'test_results': text_results,
         'form': submission_form,
@@ -245,3 +246,13 @@ def room(request, room_name):
     }
 
     return render(request, 'chat/room.html', context=context)
+
+
+def room_headless(request, room_name):
+
+    context = {
+        'nbar': 'Chat',
+        'room_name_json': mark_safe(json.dumps(room_name)),
+    }
+
+    return render(request, 'chat/room_headless.html', context=context)

@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^markdownx/', include(markdownx)),
     path('chat/', views.chat, name='chat'),
     re_path(r'^chat/(?P<room_name>[^/]+)/$', views.room, name='room'),
+    re_path(r'^chat_headless/(?P<room_name>[^/]+)/$', views.room_headless, name='room_headless'),
 ]
