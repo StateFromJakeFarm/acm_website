@@ -10,10 +10,12 @@ class CreateOrEditProblemForm(forms.Form):
     '''
     Manage problem creations and edits
     '''
-    title       = forms.CharField()
+    title = forms.CharField()
     description = MarkdownxFormField()
-    testcases   = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
-    time_limit  = forms.FloatField()
+    testcases = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
+    time_limit = forms.FloatField()
+    mem_limit = forms.CharField(max_length=10)
+    memswap_limit = forms.CharField(max_length=10)
 
 class RegistrationForm(UserCreationForm):
     '''

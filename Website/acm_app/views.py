@@ -129,6 +129,7 @@ def problem(request, slug=''):
         'test_results': text_results,
         'form': submission_form,
         'time_limit': problem.time_limit,
+        'memswap_limit': problem.memswap_limit,
         'nbar': 'Problems'
     }
 
@@ -167,7 +168,9 @@ def create_or_edit_problem(request, slug=''):
             problem_info = {
                 'title': problem.title,
                 'description': problem.description,
-                'time_limit': problem.time_limit
+                'time_limit': problem.time_limit,
+                'mem_limit': problem.mem_limit,
+                'memswap_limit': problem.memswap_limit
             }
 
     if request.method == 'POST':
@@ -198,12 +201,14 @@ def create_or_edit_problem(request, slug=''):
                 'title': edit_form.cleaned_data['title'],
                 'description': edit_form.cleaned_data['description'],
                 'testcases': testcasepath,
-                'time_limit': edit_form.cleaned_data['time_limit']
+                'time_limit': edit_form.cleaned_data['time_limit'],
+                'mem_limit': edit_form.cleaned_data['mem_limit'],
+                'memswap_limit': edit_form.cleaned_data['memswap_limit']
             }
 
             if problem and slug == problem.slug:
                 # Save an updated version of an old problem
-                update_fields = ['title', 'description', 'time_limit']
+                update_fields = ['title', 'description', 'time_limit', 'mem_limit', 'memswap_limit']
 
                 if len(myfiles):
                     # User uploaded new testcases

@@ -7,12 +7,14 @@ class ProblemModel(models.Model):
     '''
     Catalog problem info
     '''
-    title       = models.CharField(max_length=100)
-    slug        = models.SlugField(unique=True)
+    title = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
     description = MarkdownxField()
-    author      = models.ForeignKey(User, on_delete=models.PROTECT)
-    testcases   = models.FileField(upload_to='testcases', blank=True) # Expecting this to be a tarball of the .in and .out files
-    time_limit  = models.FloatField(default=1) # Seconds to run testcase before declaring timeout
+    author = models.ForeignKey(User, on_delete=models.PROTECT)
+    testcases = models.FileField(upload_to='testcases', blank=True) # Expecting this to be a tarball of the .in and .out files
+    time_limit = models.FloatField(default=1) # Seconds to run testcase before declaring timeout
+    mem_limit = models.CharField(max_length=10, default='100m')
+    memswap_limit = models.CharField(max_length=10, default='500m')
 
 class LeaderboardModel(models.Model):
     '''
