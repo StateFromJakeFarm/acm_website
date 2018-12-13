@@ -20,10 +20,11 @@
 <tbody>
 
 {% for u in leaderboard %}
-
-<tr scope="row">{{forloop.counter}}</tr>
+<tr>
+<th scope="row">{{forloop.counter}}</th>
     <td>{{u.user.username}}</td>
     <td>{{u.score}}</td>
+</tr>
 {% endfor %}
 
 </tbody>

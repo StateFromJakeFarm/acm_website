@@ -140,7 +140,7 @@ def leaderboard(request):
     TODO: Render leaderboard
     '''
 
-    leaderboard = models.LeaderboardModel.objects.all().order_by('score')
+    leaderboard = models.LeaderboardModel.objects.all().order_by('score').reverse()
 
     context = {
         'nbar': 'Leaderboard',
