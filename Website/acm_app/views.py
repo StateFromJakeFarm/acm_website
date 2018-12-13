@@ -9,6 +9,8 @@ from django.core.files.storage import DefaultStorage
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.contrib.auth.decorators import permission_required
+from django.db.models import F
+
 import json
 
 
@@ -48,6 +50,9 @@ def register(request):
                                     password=registration_form.cleaned_data['password1'],
                                     )
             login(request, new_user)
+
+            models.LeaderboardModel(user=new_user).save()
+
             return redirect('/')
     else:
         # Present form to user
@@ -86,7 +91,7 @@ def problem(request, slug=''):
 
     # Get problem object from database
     problem = models.ProblemModel.objects.filter(slug=slug)[0]
-    test_results = ''
+    text_results = ''
 
     if request.method == 'POST':
         submission_form = forms.ProblemSubmissionForm(
@@ -101,15 +106,26 @@ def problem(request, slug=''):
                 settings.MEDIA_ROOT, str(problem.testcases))
 
             # Run submission and get results from grader container
-            test_results = run_submission(local_file_path, testcases_path,
-                problem.time_limit).decode('utf-8').strip()
+            test_results = run_submission(local_file_path, testcases_path, problem.time_limit)
+
+            text_results = test_results['text']
+            boolean_result = test_results['result']
+
+            if boolean_result :
+                # update leaderboard if solved
+                # verify correctness and award a point if winner
+                user = models.LeaderboardModel.objects.get(user=request.user)
+                user.score = F('score') + 1 # F is atomic or something and avoids race condition
+                user.save()
+
+
     else:
         # Present form to user
         submission_form = forms.ProblemSubmissionForm()
 
     context = {
         'description': markdown(problem.description),
-        'test_results': test_results,
+        'test_results': text_results,
         'form': submission_form,
         'time_limit': problem.time_limit,
         'nbar': 'Problems'
@@ -122,11 +138,15 @@ def leaderboard(request):
     '''
     TODO: Render leaderboard
     '''
+
+    leaderboard = models.LeaderboardModel.objects.all().order_by('score')
+
     context = {
-        'nbar': 'Leaderboard'
+        'nbar': 'Leaderboard',
+        'leaderboard' : leaderboard
     }
 
-    return render(request, 'home.html', context=context)
+    return render(request, 'leaderboard.html', context=context)
 
 @login_required
 @permission_required('user.is_staff', raise_exception=True)

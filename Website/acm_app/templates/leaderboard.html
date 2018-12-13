@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link href="{% static 'leaderboard/leaderboard.css' %}" rel="stylesheet">
+{% endblock styles %}
+
+{% block content %}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Username</th>
+      <th scope="col">Score</th>
+    </tr>
+  </thead>
+
+<tbody>
+
+{% for u in leaderboard %}
+
+<th scope="row">{{forloop.counter}}</th>
+    <td>{{u.user.username}}</td>
+    <td>{{u.score}}</td>
+{% endfor %}
+
+</tbody>
+
+{% endblock content %}

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 from markdownx.models import MarkdownxField
 
 class ProblemModel(models.Model):
@@ -17,6 +18,8 @@ class LeaderboardModel(models.Model):
     '''
     Store a relationship between users and solved porblems
     '''
-    # one to one USER
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    score = models.IntegerField(default=0)
+
     # one to many ProblemModel
     # int score

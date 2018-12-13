@@ -36,4 +36,16 @@ def run_submission(submission_path, testcases_path, time_limit):
     }
     r = requests.post('http://backend:5000', data=payload)
 
-    return r.content
+    text = r.content.decode('utf-8').strip()
+
+    if "Failed" in text or "Error" in text or "Timeout" in text:
+        passed = False
+    else:
+        passed = True
+
+    result = {
+        "text" : text,
+        "result" : passed
+        }
+
+    return result
