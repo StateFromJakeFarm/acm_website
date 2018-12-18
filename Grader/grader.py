@@ -24,7 +24,7 @@ def run_submission():
     }
 
     # Create container
-    container = client.containers.create('acm_website_runner', environment=environment,
+    container = client.containers.create('runner', environment=environment,
         pids_limit=70, mem_limit=request.form.get('mem_limit'),
         memswap_limit=request.form.get('memswap_limit'))
 

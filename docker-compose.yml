@@ -4,6 +4,7 @@ services:
   # The website container
   website:
     build: ./Website
+    image: website
     volumes:
       - ./Website:/code
       - ./Website/media:/code/media
@@ -25,6 +26,7 @@ services:
   # The backend container
   backend:
     build: ./Grader
+    image: backend
     volumes:
       - ./Grader:/code
       - /var/run/docker.sock:/var/run/docker.sock
@@ -42,6 +44,7 @@ services:
   # Runner container, will immediatley exit
   runner:
     build: ./CodeRunner
+    image: runner
     volumes:
       - /tmp:/tmp:ro
 
@@ -54,6 +57,7 @@ services:
   nginx:
     restart: always
     build: ./Nginx/
+    image: nginx:django
     depends_on:
       - website
     ports:
