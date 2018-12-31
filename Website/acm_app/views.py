@@ -17,7 +17,7 @@ import json
 
 from . import forms
 from . import models
-from .helpers import store_uploaded_file, run_submission
+from .helpers import store_uploaded_file, run_submission, user_has_solved_problem
 from markdown import markdown
 
 
@@ -51,6 +51,7 @@ def register(request):
                                     )
             login(request, new_user)
 
+            # Create leaderboard entry for this user
             models.LeaderboardModel(user=new_user).save()
 
             return redirect('/')
@@ -94,6 +95,7 @@ def problem(request, slug=''):
     text_results = ''
 
     if request.method == 'POST':
+        # Handle problem submission
         submission_form = forms.ProblemSubmissionForm(
             request.POST, request.FILES)
         if submission_form.is_valid():
@@ -111,13 +113,16 @@ def problem(request, slug=''):
             text_results = test_results['text']
             boolean_result = test_results['result']
 
-            if boolean_result :
+            if boolean_result and not user_has_solved_problem(request.user, problem):
                 # update leaderboard if solved
                 # verify correctness and award a point if winner
-                user = models.LeaderboardModel.objects.get(user=request.user)
-                user.score = F('score') + 1 # F is atomic or something and avoids race condition
-                user.save()
+                leaderboard_entry = models.LeaderboardModel.objects.get(user=request.user)
+                leaderboard_entry.score = F('score') + 1 # F is atomic or something and avoids race condition
+                leaderboard_entry.save()
 
+                # Record that user has solved this problem
+                solved_problem_entry = models.UserSolvedProblems(user=request.user, problem=problem)
+                solved_problem_entry.save()
 
     else:
         # Present form to user

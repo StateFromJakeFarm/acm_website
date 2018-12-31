@@ -5,6 +5,8 @@ import requests
 from hashlib import md5
 from random import randrange
 
+from . import models
+
 def store_uploaded_file(posted_file, local_dir):
     '''
     Save a POST'ed file locally on the server and return path to local
@@ -47,3 +49,10 @@ def run_submission(submission_path, testcases_path, time_limit):
     }
 
     return result
+
+def user_has_solved_problem(user_obj, problem_obj):
+    '''
+    Return True if a user has already solved a problem
+    '''
+    return len(models.UserSolvedProblems.objects.filter(user=user_obj,
+        problem=problem_obj)) > 0

@@ -23,7 +23,7 @@ class LeaderboardModel(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     score = models.IntegerField(default=0)
 
-class UserToSolvedProblems(models.Model):
+class UserSolvedProblems(models.Model):
     '''
     Keep track of which problems each user has solved
     '''
