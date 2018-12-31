@@ -5,6 +5,8 @@ import docker
 import tarfile
 
 from flask import Flask, request
+from hashlib import md5
+from random import randrange
 
 app = Flask(__name__)
 
@@ -13,7 +15,10 @@ client = docker.from_env()
 @app.route("/", methods=['POST'])
 def run_submission():
     # Create tar file containing submission
-    with tarfile.open('submission.tar', mode='w|gz') as t:
+    hash_obj = md5()
+    hash_obj.update(str(randrange(72)).encode('utf-8'))
+    tarfile_path = '/tmp/' + hash_obj.hexdigest() + '.tar'
+    with tarfile.open(tarfile_path, mode='w|gz') as t:
         t.add(request.form.get('submission'))
 
     # Set environment variables so container knows how to navigate all the files
@@ -30,7 +35,7 @@ def run_submission():
 
     # Put testfiles and submssion in as archives
     container.put_archive('/code/tests', open(request.form.get('testcases'), 'rb').read())
-    container.put_archive('/code', open('submission.tar', 'rb').read())
+    container.put_archive('/code', open(tarfile_path, 'rb').read())
 
     # Start container and record its logs
     container.start()
