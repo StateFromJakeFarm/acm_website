@@ -27,23 +27,54 @@
         </table>
     </div>
     <h4 style="padding-top: 50px">Submit Solution</h4>
-    <form method="post" enctype="multipart/form-data" onsubmit="document.getElementById('spinner').style.display = 'inline'">
-        {% csrf_token %}
-        {{ form.solution_file }}
-        <input type="submit" value="Submit"/>
-    </form>
+    {{ form.solution_file }}
+    <button id="submit_button">Submit</button>
 </div>
 
 <div id="testResults" class="text-center" style="padding-top: 50px">
     <img id="spinner" src="{% static 'images' %}/spinner.gif" height="50" width="50" style="display: none;">
     <span><h4>Test Results:</h4></span>
-    <pre>{{ test_results }}</pre>
+    <pre id="testResults_pre">{{ test_results }}</pre>
 </div>
 
 <div class="embed-responsive embed-responsive-1by1">
   <iframe class="embed-responsive-item" src="/chat_headless/{{slug}}"></iframe>
 </div>
 
-</div>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>
+    $('#submit_button').on('click', function() {
+        // Show spinner while we wait for results
+        $('#spinner').show('inline');
+
+        // Gather file from HTML form
+        let file_input = $('#id_solution_file')[0]
+        let file = file_input.files[0];
+        let form = new FormData();
+        form.append('solution_file', file);
+        form.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        // Send file to server via AJAX request
+        $.ajax({
+            url: '/problems/{{ slug }}',
+            dataType: 'text',
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: form,
+            type: 'post',
+            success: function(data) {
+                // Display submission results
+                $('#testResults_pre').text(data);
+
+                // Hide spinner once results arrive
+                $('#spinner').hide();
+            },
+            error: function(xhr, status, err) {
+                console.log(err);
+            }
+        });
+    });
+</script>
 
 {% endblock content %}

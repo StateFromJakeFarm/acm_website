@@ -128,21 +128,23 @@ def problem(request, slug=''):
                 solved_problem_entry = models.UserSolvedProblems(user=request.user, problem=problem)
                 solved_problem_entry.save()
 
+        return HttpResponse(text_results)
+
     else:
         # Present form to user
         submission_form = forms.ProblemSubmissionForm()
 
-    context = {
-        'slug' : slug,
-        'description': markdown(problem.description),
-        'test_results': text_results,
-        'form': submission_form,
-        'time_limit': problem.time_limit,
-        'memswap_limit': problem.memswap_limit,
-        'nbar': 'Problems'
-    }
+        context = {
+            'slug' : slug,
+            'description': markdown(problem.description),
+            'test_results': text_results,
+            'form': submission_form,
+            'time_limit': problem.time_limit,
+            'memswap_limit': problem.memswap_limit,
+            'nbar': 'Problems'
+        }
 
-    return render(request, 'problem.html', context=context)
+        return render(request, 'problem.html', context=context)
 
 
 def leaderboard(request):
