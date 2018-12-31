@@ -17,7 +17,7 @@ import json
 
 from . import forms
 from . import models
-from .helpers import store_uploaded_file, run_submission, user_has_solved_problem
+from . import helpers
 from markdown import markdown
 
 
@@ -91,7 +91,10 @@ def all_problems(request):
 def problem(request, slug=''):
 
     # Get problem object from database
-    problem = models.ProblemModel.objects.filter(slug=slug)[0]
+    problem = helpers.get_problem_record(slug)
+    if not problem:
+        raise Exception('"{}" does not identify a problem'.format(slug))
+
     text_results = ''
 
     if request.method == 'POST':
@@ -100,7 +103,7 @@ def problem(request, slug=''):
             request.POST, request.FILES)
         if submission_form.is_valid():
             # Save file to /tmp
-            local_file_path = store_uploaded_file(
+            local_file_path = helpers.store_uploaded_file(
                 request.FILES['solution_file'], '/tmp')
 
             # Grab testcases for this problem
@@ -108,12 +111,13 @@ def problem(request, slug=''):
                 settings.MEDIA_ROOT, str(problem.testcases))
 
             # Run submission and get results from grader container
-            test_results = run_submission(local_file_path, testcases_path, problem.time_limit)
+            test_results = helpers.run_submission(local_file_path, testcases_path, problem.time_limit)
 
             text_results = test_results['text']
             boolean_result = test_results['result']
 
-            if boolean_result and not user_has_solved_problem(request.user, problem):
+            if boolean_result and \
+                not helpers.user_has_solved_problem(request.user, problem):
                 # update leaderboard if solved
                 # verify correctness and award a point if winner
                 leaderboard_entry = models.LeaderboardModel.objects.get(user=request.user)
@@ -167,9 +171,8 @@ def create_or_edit_problem(request, slug=''):
     problem_info = {}
     if slug != '':
         # Grab info for an existing problem
-        for p in models.ProblemModel.objects.filter(slug=slug):
-            # Should only execute once
-            problem = p
+        problem = helpers.get_problem_record(slug)
+        if problem:
             problem_info = {
                 'title': problem.title,
                 'description': problem.description,
@@ -177,6 +180,8 @@ def create_or_edit_problem(request, slug=''):
                 'mem_limit': problem.mem_limit,
                 'memswap_limit': problem.memswap_limit
             }
+        else:
+            raise Exception('"{}" does not identify a problem'.format(slug))
 
     if request.method == 'POST':
         # Use submitted form to create/update problem info within model
@@ -196,7 +201,7 @@ def create_or_edit_problem(request, slug=''):
             if len(myfiles):
                 with tarfile.open(testcasepath, mode='w|gz') as t:
                     for f in myfiles:
-                        path = store_uploaded_file(f, '/tmp/')
+                        path = helpers.store_uploaded_file(f, '/tmp/')
                         t.add(path, arcname=f.name)
 
             # Get info for problem from form

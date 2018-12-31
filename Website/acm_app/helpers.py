@@ -54,5 +54,14 @@ def user_has_solved_problem(user_obj, problem_obj):
     '''
     Return True if a user has already solved a problem
     '''
-    return len(models.UserSolvedProblems.objects.filter(user=user_obj,
-        problem=problem_obj)) > 0
+    return (len(models.UserSolvedProblems.objects.filter(user=user_obj,
+        problem=problem_obj)) > 0)
+
+def get_problem_record(slug):
+    '''
+    Return reference to problem model instance identified by given slug or
+    None if problem doesn't exist
+    '''
+    problem_queryset = models.ProblemModel.objects.filter(slug=slug)
+
+    return (problem_queryset[0] if len(problem_queryset) else None)
