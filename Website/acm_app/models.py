@@ -23,5 +23,9 @@ class LeaderboardModel(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     score = models.IntegerField(default=0)
 
-    # one to many ProblemModel
-    # int score
+class UserToSolvedProblems(models.Model):
+    '''
+    Keep track of which problems each user has solved
+    '''
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False)
+    problem = models.ForeignKey('ProblemModel', on_delete=models.CASCADE, null=False)

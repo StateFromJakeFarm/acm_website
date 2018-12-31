@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 
 from hashlib import md5
@@ -36,16 +37,13 @@ def run_submission(submission_path, testcases_path, time_limit):
     }
     r = requests.post('http://backend:5000', data=payload)
 
+    # Get results from code runner and determine if problem was solved
     text = r.content.decode('utf-8').strip()
-
-    if "Failed" in text or "Error" in text or "Timeout" in text:
-        passed = False
-    else:
-        passed = True
+    passed = re.search('(Failed)|(Error)|(Timeout)', text) is None
 
     result = {
         "text" : text,
         "result" : passed
-        }
+    }
 
     return result
