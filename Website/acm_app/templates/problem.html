@@ -26,16 +26,20 @@
             </tr>
         </table>
     </div>
+    {% if user.is_authenticated %}
     <h4 style="padding-top: 50px">Submit Solution</h4>
     {{ form.solution_file }}
     <button id="submit_button">Submit</button>
+    {% endif %}
 </div>
 
+{% if user.is_authenticated %}
 <div id="testResults" class="text-center" style="padding-top: 50px">
     <img id="spinner" src="{% static 'images' %}/spinner.gif" height="50" width="50" style="display: none;">
     <span><h4>Test Results:</h4></span>
     <pre id="testResults_pre">{{ test_results }}</pre>
 </div>
+{% endif %}
 
 <div class="embed-responsive embed-responsive-1by1">
   <iframe class="embed-responsive-item" src="/chat_headless/{{slug}}"></iframe>
