@@ -17,6 +17,14 @@ class CreateOrEditProblemForm(forms.Form):
     mem_limit = forms.CharField(max_length=10)
     memswap_limit = forms.CharField(max_length=10)
 
+class CreateOrEditContestForm(forms.Form):
+    '''
+    Manage contest creations and edits
+    '''
+    name = forms.CharField()
+    start_time = forms.DateTimeField()
+    end_time = forms.DateTimeField()
+
 class RegistrationForm(UserCreationForm):
     '''
     Manage creation of new users

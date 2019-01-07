@@ -18,7 +18,7 @@ urlpatterns = [
     path('edit/<slug:slug>', views.create_or_edit_problem, name='edit'),   # Edit existing problem
     path('leaderboard', views.leaderboard, name='leaderboards'),           # School-wide leaderboard
     path('contests', views.all_contests, name='all contests'),             # TODO: show all contests
-    path('contests/create', views.create_or_edit_problem, name='create contest'), # Create new contest
+    path('contests/create', views.create_or_edit_contest, name='create contest'), # Create new contest
     path('contests/<slug:slug>/edit', views.create_or_edit_problem, name='edit contest'), # Edit existing contest
     url(r'^markdownx/', include(markdownx)),
     path('chat/', views.chat, name='chat'),

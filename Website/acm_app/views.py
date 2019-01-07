@@ -247,6 +247,8 @@ def create_or_edit_problem(request, slug=''):
     return render(request, 'edit.html', context=context)
 
 
+@login_required
+@permission_required('user.is_staff', raise_exception=True)
 def all_contests(request):
     context = {
         'contests': models.ContestModel.objects.all().order_by('-id'),
@@ -262,7 +264,21 @@ def create_or_edit_contest(request, slug=''):
     '''
     contest_info = {}
     if request.method == 'POST':
-        pass
+        edit_form = forms.CreateOrEditContestForm(request.POST)
+
+        if edit_form.is_valid():
+
+            # Get slug for new contest
+            slug = slugify(edit_form.cleaned_data['name'])
+
+            # Extract info from form
+            contest_info = {
+                'name': edit_form.cleaned_data['name'],
+                'start_time': edit_form.cleaned_data['start_time'],
+                'end_time': edit_form.cleaned_data['end_time']
+            }
+
+            return redirect('/contests')
     else:
         # Present form to user
         edit_form = forms.CreateOrEditContestForm(contest_info)
