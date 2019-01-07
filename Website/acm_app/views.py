@@ -149,7 +149,7 @@ def problem(request, slug=''):
 
 def leaderboard(request):
     '''
-    TODO: Render leaderboard
+    Render leaderboard
     '''
 
     leaderboard = models.LeaderboardModel.objects.all().order_by('score').reverse()
@@ -245,6 +245,34 @@ def create_or_edit_problem(request, slug=''):
     }
 
     return render(request, 'edit.html', context=context)
+
+
+def all_contests(request):
+    context = {
+        'contests': models.ContestModel.objects.all().order_by('-id'),
+        'nbar' : 'Contests'
+    }
+
+    return render(request, 'all_contests.html', context=context)
+
+
+def create_or_edit_contest(request, slug=''):
+    '''
+    Handle contest creation and editing
+    '''
+    contest_info = {}
+    if request.method == 'POST':
+        pass
+    else:
+        # Present form to user
+        edit_form = forms.CreateOrEditContestForm(contest_info)
+
+    context = {
+        'form': edit_form,
+        'nbar': 'Contests'
+    }
+
+    return render(request, 'edit_contest.html', context=context)
 
 
 def chat(request):
