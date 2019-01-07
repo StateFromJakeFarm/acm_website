@@ -79,7 +79,9 @@ def home(request):
 
 
 def all_problems(request):
-
+    '''
+    Display all problems
+    '''
     context = {
         'problems': models.ProblemModel.objects.all().order_by('-id'),
         'nbar' : 'Problems'
@@ -248,8 +250,10 @@ def create_or_edit_problem(request, slug=''):
 
 
 @login_required
-@permission_required('user.is_staff', raise_exception=True)
 def all_contests(request):
+    '''
+    Display all contests
+    '''
     context = {
         'contests': models.ContestModel.objects.all().order_by('-id'),
         'nbar' : 'Contests'
@@ -274,9 +278,13 @@ def create_or_edit_contest(request, slug=''):
             # Extract info from form
             contest_info = {
                 'name': edit_form.cleaned_data['name'],
+                'slug': slug,
                 'start_time': edit_form.cleaned_data['start_time'],
                 'end_time': edit_form.cleaned_data['end_time']
             }
+
+            # Save completely new contest
+            models.ContestModel(**contest_info).save()
 
             return redirect('/contests')
     else:
@@ -289,6 +297,13 @@ def create_or_edit_contest(request, slug=''):
     }
 
     return render(request, 'edit_contest.html', context=context)
+
+
+def contest(request, slug=''):
+    '''
+    View and participate in contest
+    '''
+    pass
 
 
 def chat(request):

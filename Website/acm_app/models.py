@@ -30,6 +30,7 @@ class ContestModel(models.Model):
     Facilitate an ICPC-style programming competition.
     '''
     name = models.CharField(max_length=50)
+    slug = models.SlugField(unique=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     participants = models.ManyToManyField(ParticipantModel)
