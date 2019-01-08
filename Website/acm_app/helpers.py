@@ -65,3 +65,12 @@ def get_problem_record(slug):
     problem_queryset = models.ProblemModel.objects.filter(slug=slug)
 
     return (problem_queryset[0] if len(problem_queryset) else None)
+
+def get_contest_record(slug):
+    '''
+    Return reference to contest model instance identified by given slug or
+    None if contest doesn't exist
+    '''
+    contest_queryset = models.ContestModel.objects.filter(slug=slug)
+
+    return (contest_queryset[0] if len(contest_queryset) else None)

@@ -266,7 +266,19 @@ def create_or_edit_contest(request, slug=''):
     '''
     Handle contest creation and editing
     '''
+    contest = None
     contest_info = {}
+    if slug != '':
+        contest = helpers.get_contest_record(slug)
+        if contest:
+            contest_info = {
+                'name': contest.name,
+                'start_time': contest.start_time,
+                'end_time': contest.end_time
+            }
+        else:
+            raise Exception('"{}" does not identify a problem'.format(slug))
+            
     if request.method == 'POST':
         edit_form = forms.CreateOrEditContestForm(request.POST)
 
@@ -283,8 +295,17 @@ def create_or_edit_contest(request, slug=''):
                 'end_time': edit_form.cleaned_data['end_time']
             }
 
-            # Save completely new contest
-            models.ContestModel(**contest_info).save()
+            if contest and slug == contest.slug:
+                # Save an updated version of an old contest
+                update_fields = ['start_time', 'end_time']
+
+                for attr in update_fields:
+                    setattr(contest, attr, contest_info[attr])
+
+                contest.save(update_fields=update_fields)
+            else:
+                # Save completely new contest
+                models.ContestModel(**contest_info).save()
 
             return redirect('/contests')
     else:
