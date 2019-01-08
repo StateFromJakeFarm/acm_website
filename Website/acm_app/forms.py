@@ -10,18 +10,19 @@ class CreateOrEditProblemForm(forms.Form):
     '''
     Manage problem creations and edits
     '''
-    title = forms.CharField()
+    title = forms.CharField(max_length=100)
     description = MarkdownxFormField()
     testcases = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
     time_limit = forms.FloatField()
     mem_limit = forms.CharField(max_length=10)
     memswap_limit = forms.CharField(max_length=10)
+    contest = forms.CharField(max_length=100, required=False)
 
 class CreateOrEditContestForm(forms.Form):
     '''
     Manage contest creations and edits
     '''
-    name = forms.CharField()
+    name = forms.CharField(max_length=100)
     start_time = forms.DateTimeField()
     end_time = forms.DateTimeField()
 

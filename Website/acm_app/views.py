@@ -145,6 +145,8 @@ def problem(request, slug=''):
             'memswap_limit': problem.memswap_limit,
             'nbar': 'Problems'
         }
+        if problem.contest:
+            context['contest'] = problem.contest.name
 
         return render(request, 'problem.html', context=context)
 
@@ -182,7 +184,8 @@ def create_or_edit_problem(request, slug=''):
                 'description': problem.description,
                 'time_limit': problem.time_limit,
                 'mem_limit': problem.mem_limit,
-                'memswap_limit': problem.memswap_limit
+                'memswap_limit': problem.memswap_limit,
+                'contest': problem.contest.name
             }
         else:
             raise Exception('"{}" does not identify a problem'.format(slug))
@@ -217,12 +220,14 @@ def create_or_edit_problem(request, slug=''):
                 'testcases': testcasepath,
                 'time_limit': edit_form.cleaned_data['time_limit'],
                 'mem_limit': edit_form.cleaned_data['mem_limit'],
-                'memswap_limit': edit_form.cleaned_data['memswap_limit']
+                'memswap_limit': edit_form.cleaned_data['memswap_limit'],
+                'contest': helpers.get_contest_record(
+                    slugify(edit_form.cleaned_data['contest']))
             }
 
             if problem and slug == problem.slug:
                 # Save an updated version of an old problem
-                update_fields = ['title', 'description', 'time_limit', 'mem_limit', 'memswap_limit']
+                update_fields = ['title', 'description', 'time_limit', 'mem_limit', 'memswap_limit', 'contest']
 
                 if len(myfiles):
                     # User uploaded new testcases
