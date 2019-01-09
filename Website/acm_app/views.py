@@ -78,16 +78,24 @@ def home(request):
     return render(request, 'home.html', context=context)
 
 
-def all_problems(request):
+def display_problems(request, contest_slug=None):
     '''
     Display all problems
     '''
+    if contest_slug:
+        # Grab all problems from requested contest
+        contest = helpers.get_contest_record(contest_slug)
+        problems = models.ProblemModel.objects.filter(contest=contest).order_by('-id')
+    else:
+        # Grab all problems not belonging to any contest
+        problems = models.ProblemModel.objects.filter(contest=None).order_by('-id')
+
     context = {
-        'problems': models.ProblemModel.objects.all().order_by('-id'),
+        'problems': problems,
         'nbar' : 'Problems'
     }
 
-    return render(request, 'all_problems.html', context=context)
+    return render(request, 'display_problems.html', context=context)
 
 
 def problem(request, slug=''):
@@ -329,7 +337,7 @@ def contest(request, slug=''):
     '''
     View and participate in contest
     '''
-    pass
+    return display_problems(request, contest_slug=slug)
 
 
 def chat(request):
