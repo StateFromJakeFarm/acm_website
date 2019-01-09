@@ -13,6 +13,12 @@
 
 <div class="starter-template">
 
+{% if contest_name %}
+<div class="center-block">
+    <h1><u>{{ contest_name }}</u></h1>
+</div>
+{% endif %}
+
 {% if request.user.is_staff %}
 <a class="btn" href="/edit" style="padding-bottom: 50px">Create New Problem</a>
 {% endif %}

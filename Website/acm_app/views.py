@@ -82,6 +82,7 @@ def display_problems(request, contest_slug=None):
     '''
     Display all problems
     '''
+    contest = None
     if contest_slug:
         # Grab all problems from requested contest
         contest = helpers.get_contest_record(contest_slug)
@@ -92,8 +93,12 @@ def display_problems(request, contest_slug=None):
 
     context = {
         'problems': problems,
-        'nbar' : 'Problems'
+        'nbar' : 'Contests' if contest else 'Problems',
     }
+
+    if contest:
+        # Display contest name
+        context['contest_name'] = contest.name
 
     return render(request, 'display_problems.html', context=context)
 
