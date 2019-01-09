@@ -23,7 +23,7 @@ class ParticipantModel(models.Model):
     '''
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False)
     solved = models.IntegerField(default=0)
-    penalty = models.IntegerField(default=0)
+    penalty = models.IntegerField(default=0) # Seconds
 
 class ContestModel(models.Model):
     '''

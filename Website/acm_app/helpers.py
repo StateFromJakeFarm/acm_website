@@ -74,3 +74,9 @@ def get_contest_record(slug):
     contest_queryset = models.ContestModel.objects.filter(slug=slug)
 
     return (contest_queryset[0] if len(contest_queryset) else None)
+
+def is_participant(contest_obj, user_obj):
+    '''
+    Return true if user is a participant in given contest, false otherwise
+    '''
+    return bool(len(contest_obj.participants.filter(user=user_obj)))

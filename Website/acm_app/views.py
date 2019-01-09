@@ -78,14 +78,12 @@ def home(request):
     return render(request, 'home.html', context=context)
 
 
-def display_problems(request, contest_slug=None):
+def display_problems(request, contest=None):
     '''
     Display all problems
     '''
-    contest = None
-    if contest_slug:
+    if contest:
         # Grab all problems from requested contest
-        contest = helpers.get_contest_record(contest_slug)
         problems = models.ProblemModel.objects.filter(contest=contest).order_by('-id')
     else:
         # Grab all problems not belonging to any contest
@@ -97,8 +95,8 @@ def display_problems(request, contest_slug=None):
     }
 
     if contest:
-        # Display contest name
-        context['contest_name'] = contest.name
+        # Add contest name and slug
+        context.update({'contest_name': contest.name, 'contest_slug': contest.slug})
 
     return render(request, 'display_problems.html', context=context)
 
@@ -295,7 +293,7 @@ def create_or_edit_contest(request, slug=''):
                 'end_time': contest.end_time
             }
         else:
-            raise Exception('"{}" does not identify a problem'.format(slug))
+            raise Exception('"{}" does not identify a contest'.format(slug))
             
     if request.method == 'POST':
         edit_form = forms.CreateOrEditContestForm(request.POST)
@@ -338,12 +336,42 @@ def create_or_edit_contest(request, slug=''):
     return render(request, 'edit_contest.html', context=context)
 
 
+@login_required
 def contest(request, slug=''):
     '''
-    View and participate in contest
+    View contest problems or redirect to registration page
     '''
-    return display_problems(request, contest_slug=slug)
+    contest = helpers.get_contest_record(slug)
+    if helpers.is_participant(contest, request.user):
+        return display_problems(request, contest)
+    else:
+        return redirect('/contests/' + slug + '/register')
 
+
+@login_required
+def contest_register(request, slug=''):
+    '''
+    Allow user to register for a contest
+    '''
+
+    # Grab contest
+    contest = helpers.get_contest_record(slug)
+
+    if request.method == 'POST':
+        # Create participant record for this user
+        participant = models.ParticipantModel(user=request.user)
+        participant.save()
+        contest.participants.add(participant)
+
+        return redirect('/contests/' + slug + '/problems')
+
+    context = {
+        'contest_name': contest.name,
+        'start_time': contest.start_time,
+        'end_time': contest.end_time
+    }
+
+    return render(request, 'contest_register.html', context=context)
 
 def chat(request):
 
