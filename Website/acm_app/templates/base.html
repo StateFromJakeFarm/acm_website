@@ -69,15 +69,15 @@
         </div>
     </nav>
 
-    {% if contest_name and contest_slug %}
+    {% if contest %}
     <nav class="navbar navbar-expand-md">
         <div class="collapse navbar-collapse" id="navbarLeft-contest">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item {% if nbar == 'Problems' %}active{% endif %}">
-                    <a class="nav-link" href="/contests/{{ contest_slug }}/problems">Problems</a>
+                    <a class="nav-link" href="/contests/{{ contest.slug}}/problems">Problems</a>
                 </li>
                 <li class="nav-item {% if nbar == 'Leaderboard' %}active{% endif %}">
-                    <a class="nav-link" href="/contests/{{ contest_slug }}/scoreboard">Scoreboard</a>
+                    <a class="nav-link" href="/contests/{{ contest.slug }}/scoreboard">Scoreboard</a>
                 </li>
             </ul>
         </div>

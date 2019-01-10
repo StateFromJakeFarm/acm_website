@@ -96,8 +96,7 @@ def display_problems(request, contest=None):
     }
 
     if contest:
-        # Add contest name and slug
-        context.update({'contest_name': contest.name, 'contest_slug': contest.slug})
+        context['contest'] = contest
 
     return render(request, 'problem/display.html', context=context)
 
@@ -176,9 +175,7 @@ def problem(request, slug=''):
         }
         if problem.contest:
             # Add contest name and slug
-            context.update({'contest_name': problem.contest.name,
-                'contest_slug': problem.contest.slug})
-
+            context['contest'] = problem.contest
 
         return render(request, 'problem/problem.html', context=context)
 
@@ -392,9 +389,7 @@ def contest_register(request, slug=''):
         return redirect('/contests/' + slug + '/problems')
 
     context = {
-        'contest_name': contest.name,
-        'start_time': contest.start_time,
-        'end_time': contest.end_time
+        'contest': contest
     }
 
     return render(request, 'contest/register.html', context=context)
@@ -406,9 +401,8 @@ def scoreboard(request, slug=''):
     '''
     contest = helpers.get_contest_record(slug)
     context = {
+        'contest': contest,
         'participants': contest.participants.all().order_by('solved').reverse(),
-        'contest_name': contest.name,
-        'contest_slug': contest.slug,
         'nbar': 'Contests'
     }
 

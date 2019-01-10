@@ -10,15 +10,15 @@
 {% block content %}
 
 <div class="text-center">
-    <h1><u>{{ contest_name }}</u></h1>
+    <h1><u>{{ contest.name }}</u></h1>
     <table style="margin: auto">
         <tr>
             <td><b>Start:</b></td>
-            <td>{{ start_time }}</td>
+            <td>{{ contest.start_time }}</td>
         </tr>
         <tr>
             <td><b>End:</b></td>
-            <td>{{ end_time }}</td>
+            <td>{{ contest.end_time }}</td>
         </tr>
     </table>
     <br>
