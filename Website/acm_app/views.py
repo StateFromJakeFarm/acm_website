@@ -139,11 +139,11 @@ def problem(request, slug=''):
                 if boolean_result:
                     if problem.contest:
                         # Update user's competition score and add time-to-solve penalty
-                        participant_entry.score = F('solved') + 1
+                        participant_entry.solved = F('solved') + 1
 
                         time_delta = (submission_timestamp - problem.contest.start_time).total_seconds()
                         participant_entry.penalty = F('penalty') + time_delta
-                        participant_entry.update()
+                        participant_entry.save()
 
                     # update leaderboard if solved
                     # verify correctness and award a point if winner
@@ -157,7 +157,7 @@ def problem(request, slug=''):
                 elif problem.contest:
                     # Incorrect contest problem submission; add penalty
                     participant_entry.penalty = F('penalty') + 1200 # (20 mins)
-                    participant_entry.update()
+                    participant_entry.save()
 
         return HttpResponse(text_results)
 
@@ -175,7 +175,10 @@ def problem(request, slug=''):
             'nbar': 'Problems'
         }
         if problem.contest:
-            context['contest'] = problem.contest.name
+            # Add contest name and slug
+            context.update({'contest_name': problem.contest.name,
+                'contest_slug': problem.contest.slug})
+
 
         return render(request, 'problem/problem.html', context=context)
 
@@ -403,9 +406,10 @@ def scoreboard(request, slug=''):
     '''
     contest = helpers.get_contest_record(slug)
     context = {
-        'participants': contest.participants.all().order_by('solved'),
+        'participants': contest.participants.all().order_by('solved').reverse(),
         'contest_name': contest.name,
-        'contest_slug': contest.slug
+        'contest_slug': contest.slug,
+        'nbar': 'Contests'
     }
 
     return render(request, 'contest/scoreboard.html', context=context)
