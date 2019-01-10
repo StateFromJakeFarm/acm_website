@@ -136,7 +136,8 @@ def problem(request, slug=''):
             if not helpers.user_has_already_solved_problem(request.user, problem):
                 participant_entry = models.ParticipantModel.objects.get(user=request.user)
                 if boolean_result:
-                    if problem.contest:
+                    if problem.contest and problem.contest.start_time <= submission_timestamp and \
+                        submission_timestamp < problem.contest.end_time:
                         # Update user's competition score and add time-to-solve penalty
                         participant_entry.solved = F('solved') + 1
 

@@ -103,21 +103,39 @@
     <script>
     {% load tz %}
     // STOLEN FROM https://www.w3schools.com/howto/howto_js_countdown.asp //
+    let start_time = new Date("{{ contest.start_time|date:'Y-m-d H:i:s' }}").getTime();
     let end_time = new Date("{{ contest.end_time|date:'Y-m-d H:i:s' }}").getTime();
 
     function updateTimer() {
         let now = new Date().getTime();
-        let delta = end_time - now;
+        let delta = -1;
+        let display_str = "";
+        if (now >= end_time) {
+            // Contest has ended
+            display_str = "<b>Contest Over</b>";
+        } else if (start_time <= now) {
+            // Contest is going on right now
+            delta = end_time - now;
+            display_str = "<b>Time Remaining:</b> ";
+        } else {
+            // Contest has not started yet
+            delta = start_time - now;
+            display_str = "<b>Contest Begins In:</b> ";
+        }
 
-        // Time calculations for days, hours, minutes and seconds
-        let days = Math.floor(delta / (1000 * 60 * 60 * 24));
-        let hours = Math.floor((delta % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        let minutes = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60));
-        let seconds = Math.floor((delta % (1000 * 60)) / 1000);
+        if (delta > 0) {
+            // Time calculations for days, hours, minutes and seconds
+            let days = Math.floor(delta / (1000 * 60 * 60 * 24));
+            let hours = Math.floor((delta % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((delta % (1000 * 60)) / 1000);
 
-        // Display the result in the element with id="demo"
-        let time_str = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
-        document.getElementById("timer").innerHTML = "<b>Time Remaining:</b> " + time_str;
+            // Display the result in the element with id="demo"
+            let time_str = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+            display_str += time_str;
+        }
+
+        document.getElementById("timer").innerHTML = display_str;
     }
 
     // Run once upon page load so user doesn't have to wait a second to see the timer
