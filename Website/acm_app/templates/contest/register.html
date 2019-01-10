@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block styles %}
+<link href="{% static 'index/index.css' %}" rel="stylesheet">
+{% endblock styles %}
+
+{% block content %}
+
+<div class="text-center">
+    <h1><u>{{ contest_name }}</u></h1>
+    <table style="margin: auto">
+        <tr>
+            <td><b>Start:</b></td>
+            <td>{{ start_time }}</td>
+        </tr>
+        <tr>
+            <td><b>End:</b></td>
+            <td>{{ end_time }}</td>
+        </tr>
+    </table>
+    <br>
+    <div style="margin: auto; width: 300px">
+        <form class="form-signin" action="{{ request.url }}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+        </form>
+    </div>
+
+</div>
+
+{% endblock content %}

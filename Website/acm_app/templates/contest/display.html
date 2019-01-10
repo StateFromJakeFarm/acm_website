@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link href="{% static 'index/index.css' %}" rel="stylesheet">
+{% endblock styles %}
+
+
+{% block content %}
+
+<div class="starter-template">
+
+{% if request.user.is_staff %}
+<a class="btn" href="contests/create" style="padding-bottom: 50px">Create New Contest</a>
+{% endif %}
+
+<div id="contestContainer">
+    {% for c in contests %}
+        <div class="row">
+            <div class="card" id="contest{{ c.id }}">
+            <div class="card-body">
+                <span><h3><a href="contests/{{ c.slug }}/problems">{{ c.name }}</a></h3></span>
+                {% if request.user.is_staff %}
+                <div><a href="contests/{{ c.slug }}/edit">Edit</a></div>
+                {% endif %}
+            </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock content %}

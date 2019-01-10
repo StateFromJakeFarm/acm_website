@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link href="{% static 'leaderboard/leaderboard.css' %}" rel="stylesheet">
+{% endblock styles %}
+
+{% block content %}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Username</th>
+            <th scope="col">Solved</th>
+            <th scope="col">Time Penalty</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for p in participants %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ p.user }}</td>
+            <td>{{ p.solved }}</td>
+            <td>{{ p.penalty }}</td>
+        <tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock content %}

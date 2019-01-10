@@ -98,7 +98,7 @@ def display_problems(request, contest=None):
         # Add contest name and slug
         context.update({'contest_name': contest.name, 'contest_slug': contest.slug})
 
-    return render(request, 'display_problems.html', context=context)
+    return render(request, 'problem/display.html', context=context)
 
 
 def problem(request, slug=''):
@@ -159,7 +159,7 @@ def problem(request, slug=''):
         if problem.contest:
             context['contest'] = problem.contest.name
 
-        return render(request, 'problem.html', context=context)
+        return render(request, 'problem/problem.html', context=context)
 
 
 def leaderboard(request):
@@ -196,8 +196,11 @@ def create_or_edit_problem(request, slug=''):
                 'time_limit': problem.time_limit,
                 'mem_limit': problem.mem_limit,
                 'memswap_limit': problem.memswap_limit,
-                'contest': problem.contest.name
             }
+
+            if problem.contest:
+                # This problem is part of a contest
+                problem_info['contest'] = problem.contest
         else:
             raise Exception('"{}" does not identify a problem'.format(slug))
 
@@ -262,7 +265,7 @@ def create_or_edit_problem(request, slug=''):
         'nbar': 'Problems'
     }
 
-    return render(request, 'edit.html', context=context)
+    return render(request, 'problem/edit.html', context=context)
 
 
 @login_required
@@ -275,9 +278,10 @@ def all_contests(request):
         'nbar' : 'Contests'
     }
 
-    return render(request, 'all_contests.html', context=context)
+    return render(request, 'contest/display.html', context=context)
 
 
+@login_required
 def create_or_edit_contest(request, slug=''):
     '''
     Handle contest creation and editing
@@ -333,7 +337,7 @@ def create_or_edit_contest(request, slug=''):
         'nbar': 'Contests'
     }
 
-    return render(request, 'edit_contest.html', context=context)
+    return render(request, 'contest/edit.html', context=context)
 
 
 @login_required
@@ -371,7 +375,20 @@ def contest_register(request, slug=''):
         'end_time': contest.end_time
     }
 
-    return render(request, 'contest_register.html', context=context)
+    return render(request, 'contest/register.html', context=context)
+
+
+def scoreboard(request, slug=''):
+    '''
+    Display scoreboard for specific contest
+    '''
+    contest = helpers.get_contest_record(slug)
+    context = {
+        'participants': contest.participants.all()
+    }
+
+    return render(request, 'contest/scoreboard.html', context=context)
+
 
 def chat(request):
 

@@ -22,6 +22,7 @@ urlpatterns = [
     path('contests/<slug:slug>/problems', views.contest, name='contest'),
     path('contests/<slug:slug>/edit', views.create_or_edit_contest, name='edit contest'), # Edit existing contest
     path('contests/<slug:slug>/register', views.contest_register, name='contest register'),
+    path('contests/<slug:slug>/scoreboard', views.scoreboard, name='contest scoreboard'),
     url(r'^markdownx/', include(markdownx)),
     path('chat/', views.chat, name='chat'),
     re_path(r'^chat/(?P<room_name>[^/]+)/$', views.room, name='room'),
