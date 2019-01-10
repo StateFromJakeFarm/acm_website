@@ -50,7 +50,7 @@ def run_submission(submission_path, testcases_path, time_limit):
 
     return result
 
-def user_has_solved_problem(user_obj, problem_obj):
+def user_has_already_solved_problem(user_obj, problem_obj):
     '''
     Return True if a user has already solved a problem
     '''

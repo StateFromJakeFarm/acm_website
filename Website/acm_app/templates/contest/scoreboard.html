@@ -3,10 +3,18 @@
 {% load static %}
 
 {% block styles %}
-<link href="{% static 'leaderboard/leaderboard.css' %}" rel="stylesheet">
+<link href="{% static 'index/index.css' %}" rel="stylesheet">
 {% endblock styles %}
 
 {% block content %}
+
+<div class="starter-template">
+
+{% if contest_name %}
+<div class="center-block">
+    <h1><u>{{ contest_name }}</u></h1>
+</div>
+{% endif %}
 
 <table class="table">
     <thead>
@@ -29,5 +37,6 @@
     {% endfor %}
     </tbody>
 </table>
+</div>
 
 {% endblock content %}

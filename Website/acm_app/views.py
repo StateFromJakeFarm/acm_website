@@ -10,6 +10,7 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.contrib.auth.decorators import permission_required
 from django.db.models import F
+from django.utils import timezone
 
 import json
 
@@ -111,6 +112,10 @@ def problem(request, slug=''):
     text_results = ''
 
     if request.method == 'POST':
+        # Record timestamp at time of submission so we can get time-to-solve
+        # penalty if this is for a competition
+        submission_timestamp = timezone.now()
+
         # Handle problem submission
         submission_form = forms.ProblemSubmissionForm(
             request.POST, request.FILES)
@@ -129,17 +134,30 @@ def problem(request, slug=''):
             text_results = test_results['text']
             boolean_result = test_results['result']
 
-            if boolean_result and \
-                not helpers.user_has_solved_problem(request.user, problem):
-                # update leaderboard if solved
-                # verify correctness and award a point if winner
-                leaderboard_entry = models.LeaderboardModel.objects.get(user=request.user)
-                leaderboard_entry.score = F('score') + 1 # F is atomic or something and avoids race condition
-                leaderboard_entry.save()
+            if not helpers.user_has_already_solved_problem(request.user, problem):
+                participant_entry = models.ParticipantModel.objects.get(user=request.user)
+                if boolean_result:
+                    if problem.contest:
+                        # Update user's competition score and add time-to-solve penalty
+                        participant_entry.score = F('solved') + 1
 
-                # Record that user has solved this problem
-                solved_problem_entry = models.UserSolvedProblems(user=request.user, problem=problem)
-                solved_problem_entry.save()
+                        time_delta = (submission_timestamp - problem.contest.start_time).total_seconds()
+                        participant_entry.penalty = F('penalty') + time_delta
+                        participant_entry.update()
+
+                    # update leaderboard if solved
+                    # verify correctness and award a point if winner
+                    leaderboard_entry = models.LeaderboardModel.objects.get(user=request.user)
+                    leaderboard_entry.score = F('score') + 1 # F is atomic or something and avoids race condition
+                    leaderboard_entry.save()
+
+                    # Record that user has solved this problem
+                    solved_problem_entry = models.UserSolvedProblems(user=request.user, problem=problem)
+                    solved_problem_entry.save()
+                elif problem.contest:
+                    # Incorrect contest problem submission; add penalty
+                    participant_entry.penalty = F('penalty') + 1200 # (20 mins)
+                    participant_entry.update()
 
         return HttpResponse(text_results)
 
@@ -200,7 +218,7 @@ def create_or_edit_problem(request, slug=''):
 
             if problem.contest:
                 # This problem is part of a contest
-                problem_info['contest'] = problem.contest
+                problem_info['contest'] = problem.contest.name
         else:
             raise Exception('"{}" does not identify a problem'.format(slug))
 
@@ -269,7 +287,7 @@ def create_or_edit_problem(request, slug=''):
 
 
 @login_required
-def all_contests(request):
+def display_contests(request):
     '''
     Display all contests
     '''
@@ -362,10 +380,11 @@ def contest_register(request, slug=''):
     contest = helpers.get_contest_record(slug)
 
     if request.method == 'POST':
-        # Create participant record for this user
-        participant = models.ParticipantModel(user=request.user)
-        participant.save()
-        contest.participants.add(participant)
+        # Create participant record for this user if one doesn't already exist
+        if not len(contest.participants.filter(user=request.user)):
+            participant = models.ParticipantModel(user=request.user)
+            participant.save()
+            contest.participants.add(participant)
 
         return redirect('/contests/' + slug + '/problems')
 
@@ -384,7 +403,9 @@ def scoreboard(request, slug=''):
     '''
     contest = helpers.get_contest_record(slug)
     context = {
-        'participants': contest.participants.all()
+        'participants': contest.participants.all().order_by('solved'),
+        'contest_name': contest.name,
+        'contest_slug': contest.slug
     }
 
     return render(request, 'contest/scoreboard.html', context=context)
