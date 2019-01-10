@@ -10,6 +10,7 @@
 
 {% block content %}
 
+{% if show_problems %}
 <div id="problemContainer" class="container">
     {% if contest %}
     <div style="opacity: 0.5">({{ contest.name }})</div>
@@ -84,5 +85,10 @@
         });
     });
 </script>
+{% else %}
+<div class="text-center">
+    <h1>No Peeking ;)</h1>
+</div>
+{% endif %}
 
 {% endblock content %}

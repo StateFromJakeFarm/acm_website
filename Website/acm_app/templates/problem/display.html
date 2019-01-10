@@ -21,6 +21,7 @@
 <a class="btn" href="/edit" style="padding-bottom: 50px">Create New Problem</a>
 {% endif %}
 
+{% if show_problems %}
 <div id="problemContainer" class="card-columns">
     {% for p in problems %}
         <div class="card" id="problem{{ p.id }}">
@@ -34,6 +35,11 @@
         </div>
     {% endfor %}
 </div>
+{% else %}
+<div class="text-center">
+    <h3>Refresh this page once contest begins to access problems.</h3>
+</div>
+{% endif %}
 </div>
 
 {% endblock content %}

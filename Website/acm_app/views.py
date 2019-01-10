@@ -83,6 +83,7 @@ def display_problems(request, contest=None):
     '''
     Display all problems
     '''
+    request_timestamp = timezone.now()
     if contest:
         # Grab all problems from requested contest
         problems = models.ProblemModel.objects.filter(contest=contest).order_by('-id')
@@ -96,7 +97,14 @@ def display_problems(request, contest=None):
     }
 
     if contest:
-        context['contest'] = contest
+        # Add contest name and slug
+        context.update({
+            'contest': contest,
+            'show_problems': contest.start_time <= request_timestamp \
+                or request.user.is_staff
+        });
+
+        print(context)
 
     return render(request, 'problem/display.html', context=context)
 
@@ -110,11 +118,8 @@ def problem(request, slug=''):
 
     text_results = ''
 
+    request_timestamp = timezone.now()
     if request.method == 'POST':
-        # Record timestamp at time of submission so we can get time-to-solve
-        # penalty if this is for a competition
-        submission_timestamp = timezone.now()
-
         # Handle problem submission
         submission_form = forms.ProblemSubmissionForm(
             request.POST, request.FILES)
@@ -136,12 +141,12 @@ def problem(request, slug=''):
             if not helpers.user_has_already_solved_problem(request.user, problem):
                 participant_entry = models.ParticipantModel.objects.get(user=request.user)
                 if boolean_result:
-                    if problem.contest and problem.contest.start_time <= submission_timestamp and \
-                        submission_timestamp < problem.contest.end_time:
+                    if problem.contest and problem.contest.start_time <= request_timestamp and \
+                        request_timestamp < problem.contest.end_time:
                         # Update user's competition score and add time-to-solve penalty
                         participant_entry.solved = F('solved') + 1
 
-                        time_delta = (submission_timestamp - problem.contest.start_time).total_seconds()
+                        time_delta = (request_timestamp - problem.contest.start_time).total_seconds()
                         participant_entry.penalty = F('penalty') + time_delta
                         participant_entry.save()
 
@@ -176,7 +181,11 @@ def problem(request, slug=''):
         }
         if problem.contest:
             # Add contest name and slug
-            context['contest'] = problem.contest
+            context.update({
+                'contest': problem.contest,
+                'show_problems': problem.contest.start_time <= request_timestamp \
+                    or request.user.is_staff
+            });
 
         return render(request, 'problem/problem.html', context=context)
 
@@ -365,7 +374,7 @@ def contest(request, slug=''):
     View contest problems or redirect to registration page
     '''
     contest = helpers.get_contest_record(slug)
-    if helpers.is_participant(contest, request.user):
+    if helpers.is_participant(contest, request.user) or request.user.is_staff:
         return display_problems(request, contest)
     else:
         return redirect('/contests/' + slug + '/register')
