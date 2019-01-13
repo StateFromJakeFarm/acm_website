@@ -93,8 +93,8 @@ def display_problems(request, contest=None):
 
     context = {
         'problems': problems,
-        'nbar' : 'Contests' if contest else 'Problems',
-        'show_problems': True
+        'show_problems': True,
+        'nbar': 'Contests' if contest else 'Problems'
     }
 
     if contest:
@@ -104,8 +104,6 @@ def display_problems(request, contest=None):
             'show_problems': contest.start_time <= request_timestamp \
                 or request.user.is_staff
         });
-
-        print(context)
 
     return render(request, 'problem/display.html', context=context)
 
@@ -178,6 +176,7 @@ def problem(request, slug=''):
             'form': submission_form,
             'time_limit': problem.time_limit,
             'memswap_limit': problem.memswap_limit,
+            'show_problems': True,
             'nbar': 'Problems'
         }
         if problem.contest:
