@@ -94,6 +94,7 @@ def display_problems(request, contest=None):
     context = {
         'problems': problems,
         'nbar' : 'Contests' if contest else 'Problems',
+        'show_problems': True
     }
 
     if contest:
