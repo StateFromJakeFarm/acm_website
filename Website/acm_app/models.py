@@ -48,3 +48,11 @@ class ProblemModel(models.Model):
     mem_limit = models.CharField(max_length=10, default='100m')
     memswap_limit = models.CharField(max_length=10, default='500m')
     contest = models.ForeignKey(ContestModel, on_delete=models.PROTECT, null=True) # FK to contest (NULL if not part of contest)
+
+class SubmissionModel(models.Model):
+    '''
+    Record problem submissions
+    '''
+    problem = models.ForeignKey(ProblemModel, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    submission_file = models.FileField(upload_to='submissions', blank=False)

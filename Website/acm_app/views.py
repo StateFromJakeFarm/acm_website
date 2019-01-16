@@ -1,4 +1,5 @@
 import os
+import shutil
 import tarfile
 
 from django.shortcuts import render, HttpResponse, redirect
@@ -123,26 +124,38 @@ def problem(request, slug=''):
         submission_form = forms.ProblemSubmissionForm(
             request.POST, request.FILES)
         if submission_form.is_valid():
-            # Save file to /tmp
-            local_file_path = helpers.store_uploaded_file(
-                request.FILES['solution_file'], '/tmp')
+            # Save submitted file
+            submissions_dir = os.path.join(settings.MEDIA_ROOT, 'submissions', slug)
+            os.makedirs(submissions_dir, exist_ok=True)
+            submission_path = helpers.store_uploaded_file(
+                request.FILES['solution_file'], submissions_dir)
+
+            # Create record of this problem submission in db
+            submission_info = {
+                'problem': problem,
+                'user': request.user,
+                'submission_file': submission_path
+            }
+            models.SubmissionModel(**submission_info).save()
 
             # Grab testcases for this problem
             testcases_path = os.path.join(
                 settings.MEDIA_ROOT, str(problem.testcases))
 
             # Run submission and get results from grader container
-            test_results = helpers.run_submission(local_file_path, testcases_path, problem.time_limit)
+            test_results = helpers.run_submission(submission_path, testcases_path, problem.time_limit)
 
             text_results = test_results['text']
             boolean_result = test_results['result']
 
             if not helpers.user_has_already_solved_problem(request.user, problem):
-                participant_entry = models.ParticipantModel.objects.get(user=request.user)
+                participant_entry = None
                 if boolean_result:
+                    # Correct submission
                     if problem.contest and problem.contest.start_time <= request_timestamp and \
                         request_timestamp < problem.contest.end_time:
                         # Update user's competition score and add time-to-solve penalty
+                        participant_entry = models.ParticipantModel.objects.get(user=request.user)
                         participant_entry.solved = F('solved') + 1
 
                         time_delta = (request_timestamp - problem.contest.start_time).total_seconds()
@@ -246,12 +259,29 @@ def create_or_edit_problem(request, slug=''):
 
             # Create tar file containing testcases only if new testcases were
             # uploaded
-            testcasepath = settings.MEDIA_ROOT + '/testcase_' + slug + '.tar'
+            testcasepath = os.path.join(settings.MEDIA_ROOT, 'testcases', slug + '.tar')
             if len(myfiles):
                 with tarfile.open(testcasepath, mode='w|gz') as t:
-                    for f in myfiles:
-                        path = helpers.store_uploaded_file(f, '/tmp/')
-                        t.add(path, arcname=f.name)
+                    # Place unpacked files in temporary staging directory while
+                    # they are placed into archive
+                    tmp_dir_path = os.path.join('/tmp/', slug)
+
+                    for _ in range(3):
+                        # Retry if directory exists for some reason
+                        try:
+                            os.mkdir(tmp_dir_path)
+                            for f in myfiles:
+                                path = helpers.store_uploaded_file(f, tmp_dir_path)
+                                t.add(path, arcname=f.name)
+
+                            # End retry loop
+                            break
+                        except FileExistsError:
+                            # Directory already exists, delete its contents
+                            shutil.rmtree(tmp_dir_path)
+
+                    # Remove temporary directory
+                    shutil.rmtree(tmp_dir_path)
 
             # Get info for problem from form
             problem_info = {
