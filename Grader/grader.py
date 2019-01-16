@@ -5,8 +5,8 @@ import docker
 import tarfile
 
 from flask import Flask, request
-from hashlib import md5
-from random import randrange
+
+from helpers import gen_unique_str
 
 app = Flask(__name__)
 
@@ -15,9 +15,7 @@ client = docker.from_env()
 @app.route("/", methods=['POST'])
 def run_submission():
     # Create tar file containing submission
-    hash_obj = md5()
-    hash_obj.update(str(randrange(72)).encode('utf-8'))
-    tarfile_path = '/tmp/' + hash_obj.hexdigest() + '.tar'
+    tarfile_path = '/tmp/' + gen_unique_str() + '.tar'
     with tarfile.open(tarfile_path, mode='w|gz') as t:
         t.add(request.form.get('submission'))
 

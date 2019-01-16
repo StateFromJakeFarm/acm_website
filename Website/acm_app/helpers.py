@@ -2,8 +2,9 @@ import os
 import re
 import requests
 
+from random import random
+from time import gmtime
 from hashlib import md5
-from random import randrange
 
 from . import models
 
@@ -14,9 +15,7 @@ def store_uploaded_file(posted_file, local_dir):
     '''
     # Use unique file name to avoid race condition where simultaneous
     # submissions with same file name clobber each other
-    hash_obj = md5()
-    hash_obj.update(str(randrange(1337)).encode('utf-8'))
-    unique_name = hash_obj.hexdigest() + posted_file.name
+    unique_name = gen_unique_str() + posted_file.name
 
     # Write solution file to disk
     local_file_path = os.path.join(local_dir, unique_name)
@@ -80,3 +79,13 @@ def is_participant(contest_obj, user_obj):
     Return true if user is a participant in given contest, false otherwise
     '''
     return bool(len(contest_obj.participants.filter(user=user_obj)))
+
+def gen_unique_str():
+    '''
+    Generate a unique string using the MD5 hash algo
+    '''
+    rand_str = str(random())
+    hash_obj = md5()
+    hash_obj.update(rand_str.encode('utf-8'))
+
+    return hash_obj.hexdigest()
