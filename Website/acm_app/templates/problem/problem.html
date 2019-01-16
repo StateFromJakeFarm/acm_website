@@ -16,6 +16,10 @@
     <div style="opacity: 0.5">({{ contest.name }})</div>
     {% endif %}
 
+    {% if request.user.is_staff %}
+    <a href="/edit/{{ slug }}">Edit</a>
+    {% endif %}
+
     <div id="problemDescription">
     {{ description|safe }}
     </div>
