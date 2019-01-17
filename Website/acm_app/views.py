@@ -130,14 +130,6 @@ def problem(request, slug=''):
             submission_path = helpers.store_uploaded_file(
                 request.FILES['solution_file'], submissions_dir)
 
-            # Create record of this problem submission in db
-            submission_info = {
-                'problem': problem,
-                'user': request.user,
-                'submission_file': submission_path
-            }
-            models.SubmissionModel(**submission_info).save()
-
             # Grab testcases for this problem
             testcases_path = os.path.join(
                 settings.MEDIA_ROOT, str(problem.testcases))
@@ -147,6 +139,16 @@ def problem(request, slug=''):
 
             text_results = test_results['text']
             boolean_result = test_results['result']
+
+            # Save record of submission
+            submission_info = {
+                'problem': problem,
+                'user': request.user,
+                'submission_file': submission_path,
+                'correct': boolean_result,
+                'submission_time': request_timestamp
+            }
+            models.SubmissionModel(**submission_info).save()
 
             if not helpers.user_has_already_solved_problem(request.user, problem):
                 participant_entry = None

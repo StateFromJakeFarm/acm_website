@@ -56,3 +56,5 @@ class SubmissionModel(models.Model):
     problem = models.ForeignKey(ProblemModel, on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     submission_file = models.FileField(upload_to='submissions', blank=False)
+    correct = models.BooleanField(default=False)
+    submission_time = models.DateTimeField(null=True)
