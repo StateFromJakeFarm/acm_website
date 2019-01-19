@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import permission_required
 from django.db.models import F
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.http import HttpResponseForbidden
 
 from markdown import markdown
 from contextlib import suppress
@@ -456,18 +457,20 @@ def submissions(request, username=''):
     return render(request, 'submissions.html', context=context)
 
 
-@permission_required('user.is_staff', raise_exception=True)
 def submission_file(request, submission_id=''):
     '''
     Serve a submission file as plaintext
     '''
-
     # We must know which file to get
     assert(submission_id != '')
-
     file_obj = models.SubmissionModel.objects.get(id=submission_id)
-    return HttpResponse(open(file_obj.submission_file.path).read(),
-        content_type='text/plain')
+
+    # Make sure they have permission to view this file
+    if not request.user.is_staff and request.user != file_obj.user:
+        return HttpResponseForbidden('You do not have permission to view this file')
+    else:
+        return HttpResponse(open(file_obj.submission_file.path).read(),
+            content_type='text/plain')
 
 
 def scoreboard(request, slug=''):
