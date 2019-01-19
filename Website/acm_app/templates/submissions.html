@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<link href="{% static 'leaderboard/leaderboard.css' %}" rel="stylesheet">
+{% endblock styles %}
+
+{% block content %}
+<h2>Problem Submissions</h2>
+<br>
+<table class="table" id="submissions">
+    <tr>
+        <th>Problem</th>
+        <th>User</th>
+        <th>Submit Time</th>
+        <th>Result</th>
+        <th>File</th>
+    </tr>
+
+    {% for s in submissions %}
+    <tr>
+        <td>{{ s.problem.title }}</td>
+        <td>{{ s.user }}</td>
+        <td>{{ s.submission_time }}</td>
+        <td>{% if s.correct %}Correct{% else %}Incorrect{% endif %}</td>
+        <td><a href="{{ s.submission_file.name }}"></a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock content %}

@@ -1,6 +1,7 @@
 import os
 import shutil
 import tarfile
+import json
 
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth import logout, login, authenticate
@@ -12,15 +13,14 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.decorators import permission_required
 from django.db.models import F
 from django.utils import timezone
+from django.contrib.auth.models import User
 
-import json
-
-
+from markdown import markdown
+from contextlib import suppress
 
 from . import forms
 from . import models
 from . import helpers
-from markdown import markdown
 
 
 # def login_view(request):
@@ -435,6 +435,28 @@ def contest_register(request, slug=''):
     }
 
     return render(request, 'contest/register.html', context=context)
+
+
+def submissions(request, username='', slug=''):
+    '''
+    Display user submissions, either all, or filtered by username or contest
+    '''
+    submissions = []
+    if username != '':
+        with suppress(User.DoesNotExist):
+            user = User.objects.get(username=username)
+            submissions = models.SubmissionModel.objects.filter(user=user)
+    elif slug != '':
+        problem = helpers.get_problem_record(slug)
+        submissions = models.SubmissionModel.objects.filter(problem=problem)
+    else:
+        submissions = models.SubmissionModel.objects.all().order_by('-id')
+
+    context = {
+        'submissions': submissions
+    }
+
+    return render(request, 'submissions.html', context=context)
 
 
 def scoreboard(request, slug=''):
