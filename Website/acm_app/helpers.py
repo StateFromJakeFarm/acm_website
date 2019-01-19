@@ -89,3 +89,9 @@ def gen_unique_str():
     hash_obj.update(rand_str.encode('utf-8'))
 
     return hash_obj.hexdigest()
+
+def get_contest_choices():
+    '''
+    Return list of tuples used to select contest in problem edit form
+    '''
+    return [('', '')] + [(c.name, c.name) for c in models.ContestModel.objects.all()]

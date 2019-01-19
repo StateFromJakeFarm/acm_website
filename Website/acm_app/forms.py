@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from markdownx.fields import MarkdownxFormField
+from .helpers import get_contest_choices
 
 class ProblemSubmissionForm(forms.Form):
     solution_file = forms.FileField()
@@ -16,7 +17,7 @@ class CreateOrEditProblemForm(forms.Form):
     time_limit = forms.FloatField()
     mem_limit = forms.CharField(max_length=10)
     memswap_limit = forms.CharField(max_length=10)
-    contest = forms.CharField(max_length=100, required=False)
+    contest = forms.ChoiceField(required=False, choices=get_contest_choices())
 
 class CreateOrEditContestForm(forms.Form):
     '''

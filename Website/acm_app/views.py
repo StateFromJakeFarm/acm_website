@@ -268,7 +268,7 @@ def create_or_edit_problem(request, slug=''):
                     # they are placed into archive
                     tmp_dir_path = os.path.join('/tmp/', slug)
 
-                    for _ in range(3):
+                    for _ in range(2):
                         # Retry if directory exists for some reason
                         try:
                             os.mkdir(tmp_dir_path)
