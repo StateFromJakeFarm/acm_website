@@ -15,7 +15,7 @@
         <th>User</th>
         <th>Submit Time</th>
         <th>Result</th>
-        {% if user.is_staff %}
+        {% if user.is_staff or user.username == request.path|slice:"13:" %}
         <th>File</th>
         {% endif %}
     </tr>
@@ -26,7 +26,7 @@
         <td>{{ s.user }}</td>
         <td>{{ s.submission_time }}</td>
         <td>{% if s.correct %}Correct{% else %}Incorrect{% endif %}</td>
-        {% if user.is_staff %}
+        {% if user.is_staff or user == s.user %}
         <td><a href="/submissions/id/{{ s.id }}">submission file</a></td>
         {% endif %}
     </tr>
