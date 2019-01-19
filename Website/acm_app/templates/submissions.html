@@ -15,7 +15,9 @@
         <th>User</th>
         <th>Submit Time</th>
         <th>Result</th>
+        {% if user.is_staff %}
         <th>File</th>
+        {% endif %}
     </tr>
 
     {% for s in submissions %}
@@ -25,9 +27,7 @@
         <td>{{ s.submission_time }}</td>
         <td>{% if s.correct %}Correct{% else %}Incorrect{% endif %}</td>
         {% if user.is_staff %}
-        <td><a href="/submissions/{{ s.id }}">submission file</a></td>
-        {% else %}
-        <td>:)<td>
+        <td><a href="/submissions/id/{{ s.id }}">submission file</a></td>
         {% endif %}
     </tr>
     {% endfor %}
