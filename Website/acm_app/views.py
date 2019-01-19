@@ -445,7 +445,7 @@ def submissions(request, username=''):
     if username != '':
         with suppress(User.DoesNotExist):
             user = User.objects.get(username=username)
-            submissions = models.SubmissionModel.objects.filter(user=user)
+            submissions = models.SubmissionModel.objects.filter(user=user).order_by('-id')
     else:
         submissions = models.SubmissionModel.objects.all().order_by('-id')
 
