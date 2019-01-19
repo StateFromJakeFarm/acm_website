@@ -30,7 +30,7 @@
     {% for p in participants %}
         <tr>
             <th scope="row">{{ forloop.counter }}</th>
-            <td>{{ p.user }}</td>
+            <td><a href="/submissions/{{p.user.username}}">{{p.user.username}}</a></td>
             <td>{{ p.solved }}</td>
             <td>{{ p.penalty }}</td>
         <tr>

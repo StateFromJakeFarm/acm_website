@@ -22,7 +22,7 @@
 {% for u in leaderboard %}
 <tr>
 <th scope="row">{{forloop.counter}}</th>
-    <td><a href="/submissions/user/{{u.user.username}}">{{u.user.username}}</a></td>
+    <td><a href="/submissions/{{u.user.username}}">{{u.user.username}}</a></td>
     <td>{{u.score}}</td>
 </tr>
 {% endfor %}

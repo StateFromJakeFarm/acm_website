@@ -24,7 +24,11 @@
         <td>{{ s.user }}</td>
         <td>{{ s.submission_time }}</td>
         <td>{% if s.correct %}Correct{% else %}Incorrect{% endif %}</td>
-        <td><a href="{{ s.submission_file.name }}"></a></td>
+        {% if user.is_staff %}
+        <td><a href="/submissions/{{ s.id }}">submission file</a></td>
+        {% else %}
+        <td>{{ s.submission_file }}<td>
+        {% endif %}
     </tr>
     {% endfor %}
 </table>

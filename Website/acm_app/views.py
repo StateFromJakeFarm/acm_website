@@ -437,7 +437,7 @@ def contest_register(request, slug=''):
     return render(request, 'contest/register.html', context=context)
 
 
-def submissions(request, username='', slug=''):
+def submissions(request, username=''):
     '''
     Display user submissions, either all, or filtered by username or contest
     '''
@@ -446,9 +446,6 @@ def submissions(request, username='', slug=''):
         with suppress(User.DoesNotExist):
             user = User.objects.get(username=username)
             submissions = models.SubmissionModel.objects.filter(user=user)
-    elif slug != '':
-        problem = helpers.get_problem_record(slug)
-        submissions = models.SubmissionModel.objects.filter(problem=problem)
     else:
         submissions = models.SubmissionModel.objects.all().order_by('-id')
 
@@ -457,6 +454,20 @@ def submissions(request, username='', slug=''):
     }
 
     return render(request, 'submissions.html', context=context)
+
+
+@permission_required('user.is_staff', raise_exception=True)
+def submission_file(request, submission_id=''):
+    '''
+    Serve a submission file as plaintext
+    '''
+
+    # We must know which file to get
+    assert(submission_id != '')
+
+    file_obj = models.SubmissionModel.objects.get(id=submission_id)
+    return HttpResponse(open(file_obj.submission_file.path).read(),
+        content_type='text/plain')
 
 
 def scoreboard(request, slug=''):
