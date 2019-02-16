@@ -107,19 +107,20 @@
     let end_time = new Date("{{ contest.end_time|date:'Y-m-d H:i:s' }}").getTime();
 
     function updateTimer() {
-        let now = new Date().getTime();
+        let now = new Date();
+        let now_utc = new Date(now.getTime() + now.getTimezoneOffset()*60000);
         let delta = -1;
         let display_str = "";
-        if (now >= end_time) {
+        if (now_utc >= end_time) {
             // Contest has ended
             display_str = "<b>Contest Over</b>";
-        } else if (start_time <= now) {
+        } else if (start_time <= now_utc) {
             // Contest is going on right now
-            delta = end_time - now;
+            delta = end_time - now_utc;
             display_str = "<b>Time Remaining:</b> ";
         } else {
             // Contest has not started yet
-            delta = start_time - now;
+            delta = start_time - now_utc;
             display_str = "<b>Contest Begins In:</b> ";
         }
 

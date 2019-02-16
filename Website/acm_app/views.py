@@ -483,6 +483,10 @@ def scoreboard(request, slug=''):
     Display scoreboard for specific contest
     '''
     contest = helpers.get_contest_record(slug)
+    if not helpers.is_participant(contest, request.user) and not request.user.is_staff:
+        return redirect('/contests/' + slug + '/register')
+
+    contest = helpers.get_contest_record(slug)
     context = {
         'contest': contest,
         'participants': contest.participants.all().order_by('solved').reverse(),
