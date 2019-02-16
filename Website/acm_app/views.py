@@ -262,9 +262,14 @@ def create_or_edit_problem(request, slug=''):
 
             # Create tar file containing testcases only if new testcases were
             # uploaded
-            testcasepath = os.path.join(settings.MEDIA_ROOT, 'testcases', slug + '.tar')
+            testcases_dir = os.path.join(settings.MEDIA_ROOT, 'testcases')
+            testcases_path = os.path.join(testcases_dir, slug + '.tar')
             if len(myfiles):
-                with tarfile.open(testcasepath, mode='w|gz') as t:
+                # Create testcases directory if need be
+                if not os.path.exists(testcases_dir):
+                    os.makedirs(testcases_dir)
+
+                with tarfile.open(testcases_path, mode='w|gz') as t:
                     # Place unpacked files in temporary staging directory while
                     # they are placed into archive
                     tmp_dir_path = os.path.join('/tmp/', slug)
@@ -292,7 +297,7 @@ def create_or_edit_problem(request, slug=''):
                 'author': request.user,
                 'title': edit_form.cleaned_data['title'],
                 'description': edit_form.cleaned_data['description'],
-                'testcases': testcasepath,
+                'testcases': testcases_path,
                 'time_limit': edit_form.cleaned_data['time_limit'],
                 'mem_limit': edit_form.cleaned_data['mem_limit'],
                 'memswap_limit': edit_form.cleaned_data['memswap_limit'],
