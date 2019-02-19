@@ -94,8 +94,4 @@ def get_contest_choices():
     '''
     Return list of tuples used to select contest in problem edit form
     '''
-    try:
-        return [('', '')] + [(c.name, c.name) for c in models.ContestModel.objects.all()]
-    except:
-        # If user has not migrated database, this will fail because there will be no ContestModel table
-        return []
+    return [('', '')] + [(c.name, c.name) for c in models.ContestModel.objects.all()]

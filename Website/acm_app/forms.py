@@ -17,7 +17,7 @@ class CreateOrEditProblemForm(forms.Form):
     time_limit = forms.FloatField()
     mem_limit = forms.CharField(max_length=10)
     memswap_limit = forms.CharField(max_length=10)
-    contest = forms.ChoiceField(required=False, choices=get_contest_choices())
+    contest = forms.ChoiceField(required=False, choices=get_contest_choices)
 
 class CreateOrEditContestForm(forms.Form):
     '''
