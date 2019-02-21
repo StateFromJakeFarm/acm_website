@@ -152,7 +152,6 @@ def problem(request, slug=''):
             models.SubmissionModel(**submission_info).save()
 
             if not helpers.user_has_already_solved_problem(request.user, problem):
-                participant_entry = None
                 if boolean_result:
                     # Correct submission
                     if problem.contest and problem.contest.start_time <= request_timestamp and \
@@ -176,6 +175,7 @@ def problem(request, slug=''):
                     solved_problem_entry.save()
                 elif problem.contest:
                     # Incorrect contest problem submission; add penalty
+                    participant_entry = models.ParticipantModel.objects.get(user=request.user)
                     participant_entry.penalty = F('penalty') + 1200 # (20 mins)
                     participant_entry.save()
 
