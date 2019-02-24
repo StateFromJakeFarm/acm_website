@@ -254,6 +254,11 @@ def create_or_edit_problem(request, slug=''):
 
         if edit_form.is_valid():
 
+            if problem and edit_form.cleaned_data['delete']:
+                # Delete problem and return to problems page
+                problem.delete()
+                return redirect('/problems')
+
             # Get slug first so we can use it to name the file
             slug = slugify(edit_form.cleaned_data['title'])
 
@@ -369,6 +374,11 @@ def create_or_edit_contest(request, slug=''):
         edit_form = forms.CreateOrEditContestForm(request.POST)
 
         if edit_form.is_valid():
+
+            if contest and edit_form.cleaned_data['delete']:
+                # Delete contest and return to problems page
+                contest.delete()
+                return redirect('/contests')
 
             # Get slug for new contest
             slug = slugify(edit_form.cleaned_data['name'])

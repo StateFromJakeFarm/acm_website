@@ -11,6 +11,7 @@ class CreateOrEditProblemForm(forms.Form):
     '''
     Manage problem creations and edits
     '''
+    delete = forms.BooleanField(required=False)
     title = forms.CharField(max_length=100)
     description = MarkdownxFormField()
     testcases = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
@@ -23,6 +24,7 @@ class CreateOrEditContestForm(forms.Form):
     '''
     Manage contest creations and edits
     '''
+    delete = forms.BooleanField(required=False)
     name = forms.CharField(max_length=100)
     start_time = forms.DateTimeField()
     end_time = forms.DateTimeField()
