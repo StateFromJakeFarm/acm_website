@@ -157,7 +157,7 @@ def problem(request, slug=''):
                     if problem.contest and problem.contest.start_time <= request_timestamp and \
                         request_timestamp < problem.contest.end_time:
                         # Update user's competition score and add time-to-solve penalty
-                        participant_entry = models.ParticipantModel.objects.get(user=request.user)
+                        participant_entry = models.ParticipantModel.objects.get(user=request.user, contestmodel=problem.contest)
                         participant_entry.solved = F('solved') + 1
 
                         time_delta = (request_timestamp - problem.contest.start_time).total_seconds()
@@ -175,7 +175,7 @@ def problem(request, slug=''):
                     solved_problem_entry.save()
                 elif problem.contest:
                     # Incorrect contest problem submission; add penalty
-                    participant_entry = models.ParticipantModel.objects.get(user=request.user)
+                    participant_entry = models.ParticipantModel.objects.get(user=request.user, contestmodel=problem.contest)
                     participant_entry.penalty = F('penalty') + 1200 # (20 mins)
                     participant_entry.save()
 
