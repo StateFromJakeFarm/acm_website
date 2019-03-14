@@ -497,9 +497,11 @@ def scoreboard(request, slug=''):
         return redirect('/contests/' + slug + '/register')
 
     contest = helpers.get_contest_record(slug)
+    # Sort by number solved first (reverse order), then by time penalty
+    participants = sorted(contest.participants.all(), key=lambda p: (-1*p.solved, p.penalty))
     context = {
         'contest': contest,
-        'participants': contest.participants.all().order_by('solved').reverse(),
+        'participants': participants,
         'nbar': 'Contests'
     }
 

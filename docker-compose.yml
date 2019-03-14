@@ -15,7 +15,7 @@ services:
       - backend:backend
       - redis:redis
       - postgres:postgres
-    restart: always
+    restart: on-failure
     command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
 
 
@@ -34,7 +34,7 @@ services:
       - /tmp:/tmp
     expose:
       - "5000"
-    restart: always
+    restart: on-failure
     command: python3 grader.py
 
 
@@ -55,7 +55,7 @@ services:
 
   # Nginx for front end, gets redirected to django
   nginx:
-    restart: always
+    restart: on-failure
     build: ./Nginx/
     image: nginx:django
     depends_on:
@@ -77,7 +77,7 @@ services:
 
   postgres:
     image: postgres
-    restart: always
+    restart: on-failure
     volumes:
       - ./Postgres:/var/lib/postgresql/data
     expose:
