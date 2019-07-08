@@ -1,4 +1,4 @@
-Django==2.1.4
+Django==2.1.10
 channels
 channels_redis
 psycopg2-binary
