@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  # The website container
+  # Main website
   website:
     build: ./Website
     image: website
@@ -19,11 +19,7 @@ services:
     command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
 
 
-
-
-
-
-  # The backend container
+  # Spin-off CodeRunners at request of main website container
   backend:
     build: ./Grader
     image: backend
@@ -38,10 +34,7 @@ services:
     command: python3 grader.py
 
 
-
-
-  
-  # Runner container, will immediatley exit
+  # CodeRunner is environment in which submissions are run
   runner:
     build: ./CodeRunner
     image: runner
