@@ -34,16 +34,12 @@ services:
     command: python3 grader.py
 
 
-  # CodeRunner is environment in which submissions are run
+  # CodeRunner is environment in which submissions are run.  It's included in compose file to force it to build.
   runner:
     build: ./CodeRunner
     image: runner
     volumes:
       - /tmp:/tmp:ro
-
-
-
-
 
 
   # Nginx for front end, gets redirected to django
@@ -68,6 +64,8 @@ services:
     expose: 
       - "6379"
 
+
+  # Database
   postgres:
     image: postgres
     restart: on-failure
