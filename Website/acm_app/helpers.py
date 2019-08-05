@@ -36,7 +36,7 @@ def run_submission(submission_path, testcases_path, time_limit):
         'testcases': testcases_path,
         'time_limit': time_limit
     }
-    r = requests.post('http://backend:5000', data=payload)
+    r = requests.post('http://grader:5000', data=payload)
 
     # Get results from code runner and determine if problem was solved
     text = r.content.decode('utf-8').strip()

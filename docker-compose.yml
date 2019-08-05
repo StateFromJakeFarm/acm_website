@@ -5,27 +5,28 @@ services:
   website:
     build: ./Website
     image: website
+    depends_on:
+      - postgres
     volumes:
       - ./Website:/code
       - ./Website/media:/code/media
       - /tmp:/tmp
+      - ./secret_key.txt:/code/secret_key.txt:ro
     expose:
       - "8000"
-    links:
-      - backend:backend
-      - redis:redis
-      - postgres:postgres
     environment:
-      - "DJANGO_PRODUCTION=1"
+      #- "DJANGO_PRODUCTION=1"
       - "DJANGO_SECRET_KEY=/code/secret_key.txt"
+      - "VIRTUAL_HOST=localhost"
     restart: on-failure
-    command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
+    command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate --run-syncdb && python3 manage.py runserver 0.0.0.0:8000"
+    restart: on-failure
 
 
   # Spin-off CodeRunners at request of main website container
-  backend:
+  grader:
     build: ./Grader
-    image: backend
+    image: grader
     volumes:
       - ./Grader:/code
       - /var/run/docker.sock:/var/run/docker.sock
@@ -35,30 +36,29 @@ services:
       - "5000"
     restart: on-failure
     command: python3 grader.py
+    restart: on-failure
 
 
   # CodeRunner is environment in which submissions are run.  It's included in compose file to force it to build.
-  runner:
+  coderunner:
     build: ./CodeRunner
-    image: runner
+    image: coderunner
     volumes:
       - /tmp:/tmp:ro
 
 
   # Nginx for front end, gets redirected to django
-  nginx:
-    restart: on-failure
-    build: ./Nginx/
-    image: nginx:django
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+      - ./Nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - website
     ports:
       - "80:80"
-    #  - "443:443"
-    #     volumes:
-    #        - ./code/static:/static
-    links:
-      - website:website
+      - "443:443"
+    restart: on-failure
 
 
   # Redis for django channels      
@@ -66,6 +66,7 @@ services:
     image: redis
     expose: 
       - "6379"
+    restart: on-failure
 
 
   # Database
@@ -76,6 +77,7 @@ services:
       - ./Postgres:/var/lib/postgresql/data
     expose:
       - "5432"
+    restart: on-failure
 
 
   # Serve static files in production

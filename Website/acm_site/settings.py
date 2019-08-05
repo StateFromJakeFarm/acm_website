@@ -150,3 +150,6 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# Increase max upload size
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10*1024*1024
