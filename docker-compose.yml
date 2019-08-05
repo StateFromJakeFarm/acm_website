@@ -15,6 +15,9 @@ services:
       - backend:backend
       - redis:redis
       - postgres:postgres
+    environment:
+      - "DJANGO_PRODUCTION=1"
+      - "DJANGO_SECRET_KEY=/code/secret_key.txt"
     restart: on-failure
     command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
 
@@ -73,3 +76,16 @@ services:
       - ./Postgres:/var/lib/postgresql/data
     expose:
       - "5432"
+
+
+  # Serve static files in production
+  fileserver:
+    image: halverneus/static-file-server:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./Website/static:/web
+    environment:
+      - "PORT=8080"
+      - "SHOW_LISTING=false"
+    restart: on-failure

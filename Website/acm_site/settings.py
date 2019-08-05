@@ -20,12 +20,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'q*)#obeuk!txg1p$c8e7ppo=u4h=j)on#7w&x1szg(f26y7(#1'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'q*)#obeuk!txg1p$c8e7ppo=u4h=j)on#7w&x1szg(f26y7(#1')
+if os.path.isfile(SECRET_KEY):
+    SECRET_KEY = open(SECRET_KEY).read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_PRODUCTION') is None
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -123,8 +125,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = 'http://' + ALLOWED_HOSTS[0] + ':8080/'
 
-STATIC_URL = '/static/'
 
 # Crispy forms bootstrap version
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
