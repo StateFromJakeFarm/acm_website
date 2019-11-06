@@ -18,10 +18,14 @@ from django.http import HttpResponseForbidden
 
 from markdown import markdown
 from contextlib import suppress
+from sys import stderr
 
 from . import forms
 from . import models
 from . import helpers
+
+# Globals are bad, we know
+incorrect_submission_time_penalty = 1200 # 20 mins
 
 
 # def login_view(request):
@@ -154,14 +158,20 @@ def problem(request, slug=''):
             if not helpers.user_has_already_solved_problem(request.user, problem):
                 if boolean_result:
                     # Correct submission
-                    if problem.contest and problem.contest.start_time <= request_timestamp and \
-                        request_timestamp < problem.contest.end_time:
-                        # Update user's competition score and add time-to-solve penalty
+                    if problem.contest and problem.contest.start_time <= request_timestamp and request_timestamp < problem.contest.end_time:
+                        # This submission was made for an active contest
                         participant_entry = models.ParticipantModel.objects.get(user=request.user, contestmodel=problem.contest)
+
+                        # Update user's competition score
                         participant_entry.solved = F('solved') + 1
 
+                        # Get number of incorrect submissions for this problem
+                        num_incorrect = models.SubmissionModel.objects.filter(user=request.user, correct=False).count()
+
+                        # Total time penalty per ICPC rules is defined as the time duration from the beginning of the contest up until
+                        # the problem is solved plus a 20-minute time penalty for every wrong submission made for this problem
                         time_delta = (request_timestamp - problem.contest.start_time).total_seconds()
-                        participant_entry.penalty = F('penalty') + time_delta
+                        participant_entry.penalty = F('penalty') + time_delta + num_incorrect * incorrect_submission_time_penalty
                         participant_entry.save()
 
                     # update leaderboard if solved
@@ -173,11 +183,6 @@ def problem(request, slug=''):
                     # Record that user has solved this problem
                     solved_problem_entry = models.UserSolvedProblems(user=request.user, problem=problem)
                     solved_problem_entry.save()
-                elif problem.contest:
-                    # Incorrect contest problem submission; add penalty
-                    participant_entry = models.ParticipantModel.objects.get(user=request.user, contestmodel=problem.contest)
-                    participant_entry.penalty = F('penalty') + 1200 # (20 mins)
-                    participant_entry.save()
 
         return HttpResponse(text_results)
 
@@ -263,13 +268,13 @@ def create_or_edit_problem(request, slug=''):
             slug = slugify(edit_form.cleaned_data['title'])
 
             # Get list of uploaded files
-            myfiles = request.FILES.getlist('testcases')
+            testcase_files = request.FILES.getlist('testcases')
 
             # Create tar file containing testcases only if new testcases were
             # uploaded
             testcases_dir = os.path.join(settings.MEDIA_ROOT, 'testcases')
             testcases_path = os.path.join(testcases_dir, slug + '.tar')
-            if len(myfiles):
+            if len(testcase_files):
                 # Create testcases directory if need be
                 if not os.path.exists(testcases_dir):
                     os.makedirs(testcases_dir)
@@ -283,7 +288,7 @@ def create_or_edit_problem(request, slug=''):
                         # Retry if directory exists for some reason
                         try:
                             os.mkdir(tmp_dir_path)
-                            for f in myfiles:
+                            for f in testcase_files:
                                 path = helpers.store_uploaded_file(f, tmp_dir_path)
                                 t.add(path, arcname=f.name)
 
@@ -314,7 +319,7 @@ def create_or_edit_problem(request, slug=''):
                 # Save an updated version of an old problem
                 update_fields = ['title', 'description', 'time_limit', 'mem_limit', 'memswap_limit', 'contest']
 
-                if len(myfiles):
+                if len(testcase_files):
                     # User uploaded new testcases
                     update_fields.append('testcases')
 
@@ -327,6 +332,8 @@ def create_or_edit_problem(request, slug=''):
                 models.ProblemModel(**problem_info).save()
 
             return redirect('/problems/' + slug)
+        else:
+            print('FORM ERROR: ' + repr(edit_form.errors), file=stderr)
     else:
         # Present form to user
         edit_form = forms.CreateOrEditProblemForm(problem_info)
