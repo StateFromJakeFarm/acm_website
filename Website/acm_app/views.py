@@ -166,7 +166,7 @@ def problem(request, slug=''):
                         participant_entry.solved = F('solved') + 1
 
                         # Get number of incorrect submissions for this problem
-                        num_incorrect = models.SubmissionModel.objects.filter(user=request.user, correct=False).count()
+                        num_incorrect = models.SubmissionModel.objects.filter(user=request.user, problem=problem, correct=False).count()
 
                         # Total time penalty per ICPC rules is defined as the time duration from the beginning of the contest up until
                         # the problem is solved plus a 20-minute time penalty for every wrong submission made for this problem
